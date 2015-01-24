@@ -3,16 +3,16 @@
 import React        from 'react';
 import GlobalAtom   from 'mixins/GlobalAtom';
 
-var Main = React.createClass({
+var PageHome = React.createClass({
     mixins: [GlobalAtom],
     propTypes: {},
     render (){
-        var currentRoute = this.getGlobal('currentRoute');
-        var Page = currentRoute.page;
         return (
-            <Page />
+            <div>
+                Hello, World! Home page.
+            </div>
         );
     }
 });
 
-export default Main;
+export default PageHome;

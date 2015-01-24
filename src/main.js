@@ -3,27 +3,24 @@
 import 'es6-shim/es6-shim';
 import React from 'react';
 import Atom from 'types/Atom';
+import routes from 'routes';
 
 import Main from 'views/Main';
 
 var baseTitle = "Huevos Rancheros";
 
-var pages = [
-    {id: "home", title: "Home"}
-];
-
 // string -> IO()
 var setRoute = function (href){
-    var [ ,pageID] = href.split("#");
-    pageID = pageID || "home";
+    var [ ,routeID] = href.split("#");
+    routeID = routeID || "home";
 
     // TODO: do something for error page?
-    var page = pages.find(p => p.id === pageID) || pages[0];
+    var route = routes.find(p => p.id === routeID) || routes[0];
 
-    document.title = baseTitle + " | " + page.title;
+    document.title = baseTitle + " | " + route.title;
 
-    Atom.set('currentPage',page)
-        .set('pages',pages);
+    Atom.set('currentRoute',route)
+        .set('routes',routes);
 };
 
 Main = React.createFactory(Main);
