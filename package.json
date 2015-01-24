@@ -21,6 +21,8 @@
     "6to5": "^2.13.7",
     "6to5-loader": "^2.0.0",
     "eslint": "^0.12.0",
+    "jsx-loader": "^0.12.2",
+    "react-hot-loader": "^1.1.1",
     "webpack": "^1.5.3",
     "webpack-dev-server": "^1.7.0"
   },
