@@ -1,7 +1,9 @@
 "use strict";
 
-import React        from 'react';
-import GlobalAtom   from 'mixins/GlobalAtom';
+import React from 'react';
+import GlobalAtom from 'mixins/GlobalAtom';
+
+import Navigation from 'views/Navigation';
 
 var Main = React.createClass({
     mixins: [GlobalAtom],
@@ -10,7 +12,11 @@ var Main = React.createClass({
         var currentRoute = this.getGlobal('currentRoute');
         var Page = currentRoute.page;
         return (
-            <Page />
+            <div>
+                <Page />
+                <Navigation />
+            </div>
+            
         );
     }
 });
