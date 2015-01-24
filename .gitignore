@@ -1,3 +1,8 @@
+.DS_Store
+*.sublime-workspace
+
+dist/*.js
+
 # Logs
 logs
 *.log

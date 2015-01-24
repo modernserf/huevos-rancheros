@@ -1,0 +1,31 @@
+{
+    "ecmaFeatures": {
+        "jsx": true
+    },
+    "globals": {
+        "Promise":true
+    },
+    "env": {
+        "browser": true,
+        "amd": true,
+        "jasmine": true
+    },
+    "rules": {
+        "strict": 0,
+        "quotes": false,
+        "space-infix-ops": false,
+        "no-use-before-define": false,
+        "no-console": false,
+        "no-underscore-dangle": false,
+        "no-unused-vars": false,
+        "camelcase": false,
+        "no-func-assign": false,
+        "new-cap": false,
+        "no-multi-spaces": false,
+        "comma-spacing": false,
+        "key-spacing": false,
+        "no-shadow": true,
+        "yoda": true,
+        "global-strict": false
+    }
+}

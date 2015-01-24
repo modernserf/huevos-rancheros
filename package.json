@@ -1,0 +1,33 @@
+{
+  "name": "huevos-rancheros",
+  "version": "0.1.0",
+  "description": "Exploring web application development with huevos rancheros",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/modernserf/huevos-rancheros.git"
+  },
+  "author": "Justin Falcone <justin@justinfalcone.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/modernserf/huevos-rancheros/issues"
+  },
+  "homepage": "https://github.com/modernserf/huevos-rancheros",
+  "devDependencies": {
+    "6to5": "^2.13.7",
+    "6to5-loader": "^2.0.0",
+    "eslint": "^0.12.0",
+    "webpack": "^1.5.3",
+    "webpack-dev-server": "^1.7.0"
+  },
+  "dependencies": {
+    "d3": "^3.5.3",
+    "es6-shim": "^0.22.2",
+    "react": "^0.12.2",
+    "whatwg-fetch": "^0.7.0"
+  }
+}
