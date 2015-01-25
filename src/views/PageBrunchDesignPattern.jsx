@@ -3,14 +3,18 @@
 import React        from 'react';
 import GlobalAtom   from 'mixins/GlobalAtom';
 
+import PageBase from 'views/PageBase';
+import {Flex,FlexBox} from 'views/FlexBox';
+import {colors, fonts} from 'views/style';
+
 var PageBrunchDesignPattern = React.createClass({
     mixins: [GlobalAtom],
     propTypes: {},
     render (){
         return (
-            <div>
-                lots of common brunch recipes
-            </div>
+            <PageBase color={colors.green}>
+                Foobar
+            </PageBase>
         );
     }
 });
