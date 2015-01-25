@@ -18,12 +18,34 @@ Exploring web application development with huevos rancheros
     + optional ingredients (beans, rice, guac)
     + optional preparation methods
 
-# Model App
+# What is an app?
 - Huevos Rancheros recipe builder
     + help create new recipes
     + track success of recipes/styles
-- I find it hard to tell the difference between a terrible idea and a brilliant one until I've really explored it
+    + I find it hard to tell the difference between a terrible idea and a brilliant one until I've really explored it
     + kopi luwak principle
+- an app is not a document
+    + html created with a particular kind of document in mind
+    + style attrs/tags added haphazardly to allow vernacular markup
+    + css derived from those attributes
+    + javascript/DOM similarly created without knowing what they would be used for
+    + wildly varying browser support
+    + best practices arise to make sense of this
+        + progressive enhancement
+        + restricted subsets 
+            * browser-safe pallette
+            * javascript: the good parts
+            * SMACSS, OOCSS
+        + separation of semantics and style (CSS Zen Garden)
+        + increase accessibility/usabilty, decrease complexity
+- many apps are customized document viewers
+    + a book is both a document and the machine for reading it
+    + an article is not a calendar is not a presentation is not a tweet is not a github profile, but they are all documents
+    + the "document" is a pattern; there is not one correct way to make a document
+
+---
+
+This section probably needs to be reorganized.
 
 # React
 - rendering library built by facebook
@@ -37,8 +59,7 @@ Exploring web application development with huevos rancheros
     + much smaller API than even jQuery
     + simplified considerably when using JSX
 - component-level design
-    + 
-    + similar to angular directives
+    + similar to templates, web components, angular directives
     + quickly dive from top level router down into smallest level component
     + use chrome plugin
     + arrow function for element lists
@@ -59,12 +80,12 @@ Exploring web application development with huevos rancheros
 - not using its DOM manipulation at all
     + use svg functions to generate paths
     + compare traditional vs react approach
+- isolating D3 components allows you to treat dynamic charts like images
+- inline d3 in react is neither specific to d3 nor react
+    + use d3 with angular / handlebars
+    + use react with other math / formatting libraries
 
-# Beyond Documents
-- an app is not a document
-    + separation of semantics and style
-    + layout is part of semantics
-    + interactivity is part of semantics
+# Inlining
 - inline events
     + jQuery 'best practice' is to put event handlers on parents
     + react does this for you
@@ -78,10 +99,9 @@ Exploring web application development with huevos rancheros
     + works like Shadow DOM/scoped CSS
     + don't have to think about source order, specificity, SASS DSL
 
+---
+
 # What We Learned 
-- inline d3 in react is neither specific to d3 nor react
-    + use d3 with angular / handlebars
-    + use react with other math / formatting libraries
 - the “react way” sounds bad and is contrary to the established standards
     + but its actually congruent with the goals of the established standards
     + it just acheives them in a different way
@@ -94,8 +114,6 @@ Exploring web application development with huevos rancheros
     + the browser was originally a hyperlinked document viewer
     + now its often used a hyperlinked document viewer viewer
     + this is OK
-    + an article is not a calendar is not a presentation is not a tweet is not a github profile, but they are all documents
-    + the "document" is a pattern; there is not one correct way to make a document 
 - evolution
     + the web is evolving from a collection of linked documents to a platform for applications that run on a huge range of computers
     + this is necessarily going to be a very bumpy, hacky experience
