@@ -18,12 +18,12 @@ var PageHome = React.createClass({
                     style={{height:"100%"}}>
                     <Flex>
                         <h2 style={Object.assign({
-                            color: "white",
+                            color: colors.gold,
                             textAlign: "center",
                             fontSize: 24,
                             textShadow: `black 1px 1px`,
                             marginTop: -24
-                        },fonts.hedLight)}>React, D3, and</h2>
+                        },fonts.hedLight)}>D3, React, and</h2>
                         <h1 style={Object.assign({
                             color: colors.gold,
                             textAlign: "center",

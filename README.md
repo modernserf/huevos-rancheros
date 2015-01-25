@@ -5,7 +5,7 @@ Exploring web application development with huevos rancheros
 - who am i
     + Justin
     + live in brooklyn
-    + like all white people in brooklyn, i love brunch
+    + like all brooklyn web developers, i love brunch
 - lots of common brunch recipes
     + identical names on menu, but variations on dish
     + "eggs benedict" is more like a design pattern than a recipe
@@ -37,6 +37,8 @@ Exploring web application development with huevos rancheros
     + much smaller API than even jQuery
     + simplified considerably when using JSX
 - component-level design
+    + 
+    + similar to angular directives
     + quickly dive from top level router down into smallest level component
     + use chrome plugin
     + arrow function for element lists
@@ -58,27 +60,59 @@ Exploring web application development with huevos rancheros
     + use svg functions to generate paths
     + compare traditional vs react approach
 
-# Inline Styles (time permitting)
-- note all svg attrs are inlined
-- not seeing any classes or ids on elements
-- all styles in mixins and components
+# Beyond Documents
+- an app is not a document
+    + separation of semantics and style
+    + layout is part of semantics
+    + interactivity is part of semantics
+- inline events
+    + jQuery 'best practice' is to put event handlers on parents
+    + react does this for you
+    + now i don't have to think about event bubbling
+- inline styles
+    + svg styles and positions are necessarily inlined
+    + compare css class w/ style object
+    + shared style mixins / components allow for abstraction
 - CSS is great when you remove the cascade and the stylesheet parts
     + inlining prevents style conflicts
     + works like Shadow DOM/scoped CSS
-- show base stylesheet, remainder inlined into components
+    + don't have to think about source order, specificity, SASS DSL
 
-# Gallery (time permitting)
-- showcase a couple good charts and how they are implemented 
-    + time series
-    + squid
-    + something goofy
-
-# Conclusions 
-- evolution is a celebration of deformity
+# What We Learned 
+- inline d3 in react is neither specific to d3 nor react
+    + use d3 with angular / handlebars
+    + use react with other math / formatting libraries
 - the “react way” sounds bad and is contrary to the established standards
     + but its actually congruent with the goals of the established standards
     + it just acheives them in a different way
+- "best practices" vs values
+    + the best practices for web pages are not moral imperatives
+    + accessibility, usability, ease of development are our values
+    + separating markup from styles from event handlers is a tactic 
+    + a tactic that has outlived its usefulness is a superstition
+- the purpose of the web
+    + the browser was originally a hyperlinked document viewer
+    + now its often used a hyperlinked document viewer viewer
+    + this is OK
+    + an article is not a calendar is not a presentation is not a tweet is not a github profile, but they are all documents
+    + the "document" is a pattern; there is not one correct way to make a document 
+- evolution
+    + the web is evolving from a collection of linked documents to a platform for applications that run on a huge range of computers
+    + this is necessarily going to be a very bumpy, hacky experience
+    + "Evolution is a celebration of deformity"
+    + vDOM is only the beginning
+    + react is pretty powerful, but i hope i am not still using it in five years
+    + we are still constrained by the document model, both literally (DOM) and mentally
+        * like making movies that are just filmed stageplays
+    + Elm completely abstracts away the DOM, CSS, JS
+    + Web components for inserting non-documents into documents
+    + There are tremendous opportunities for  
+
 - the way ive ended up making that dish is kind of unusual
     + i stack everything and put it in a bowl
     + full-stack breakfast engineer
-- over the course of many iterations, i came across a reconceptualization of huevos rancheros that handles separation of ingredients in an unusual format, but improves the dish’s usability.
+
+
+# Notes
+- [Magic Ink on statelessness](http://worrydream.com/MagicInk/#p270)
+

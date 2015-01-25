@@ -29,10 +29,6 @@ var linkHoverStyle = {
     color: "red"
 };
 
-
-
-
-
 var Navigation = React.createClass({
     mixins: [GlobalAtom],
     propTypes: {},
