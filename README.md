@@ -43,49 +43,22 @@ HTML and CSS are pretty good at representing a particular kind of document, but 
         + separation of semantics and style (CSS Zen Garden)
         + increase accessibility/usabilty, decrease complexity
 
----
-
-This section probably needs to be reorganized.
-
 # React
-- rendering library built by facebook
-- not going into details about implementation, but
-    + virtual DOM, redraws on every change
-    + JSX combines templates and data
-    + inline styles and event handlers
-    + but not "really" inline, because not really DOM
-    + see [Pete Hunt: Rethinking Best Practices](https://www.youtube.com/watch?v=x7cQ3mrcKaY)
-- very small feature set
-    + much smaller API than even jQuery
-    + simplified considerably when using JSX
-- component-level design
-    + similar to templates, web components, angular directives
-    + quickly dive from top level router down into smallest level component
-    + use chrome plugin
-    + arrow function for element lists
 
-# D3
-- data driven documents
-- Mike Bostock / NY Times
-- huge feature set
-    + DOM manipulation, animation, AJAX (like jQuery)
-    + math/geometry
-    + geography
-    + date/time
-    + string formatting
-    + color mixing
-- sprawling and somewhat difficult to navigate documentation
-    + every time they needed a feature for a chart, they added it to d3
-- does not actually make charts; makes useful components for charts
-- not using its DOM manipulation at all
-    + use svg functions to generate paths
-    + compare traditional vs react approach
-- isolating D3 components allows you to treat dynamic charts like images
-- inline d3 in react is neither specific to d3 nor react
-    + use d3 with angular / handlebars
-    + use react with other math / formatting libraries
+The metaphor that the web is moving towards is components, and the implementation of components that I've been using is React. React is a library made by facebook that patches over the weirdness and rigidity of the DOM with a virtual DOM. It happens to be very fast but that's its least interesting feature from my perspective; I use it because it allows me to reason about my code in a way that makes sense to me.
 
-# Inlining
+(time series)
+
+Take this graph, which tracks the quality of my recipes over time. If you're an experienced developer this probably looks like something I've copied from w3schools. It's almost like I'm purposely ignoring every best practice for web development:
+
+- mixed template and logic
+- inline events
+- tags for layout
+- inline styles
+- no class or ids
+
+The first part is the easiest to explain. Best practices dictate that templates should have as little logic as possible in the template; the data should be "massaged" into a form that can be consumed by the template. This is part of why people hate on PHP so hard -- logic-full templates are a first-class construct in the language. But this is conflating separation of technologies with separation of concerns -- **TKTKTK** web components
+
 - inline events
     + jQuery 'best practice' is to put event handlers on parents
     + react does this for you
@@ -99,7 +72,45 @@ This section probably needs to be reorganized.
     + works like Shadow DOM/scoped CSS
     + don't have to think about source order, specificity, SASS DSL
 
+
 ---
+    # React
+    - rendering library built by facebook
+    - not going into details about implementation, but
+        + virtual DOM, redraws on every change
+        + JSX combines templates and data
+        + inline styles and event handlers
+        + but not "really" inline, because not really DOM
+        + see [Pete Hunt: Rethinking Best Practices](https://www.youtube.com/watch?v=x7cQ3mrcKaY)
+    - very small feature set
+        + much smaller API than even jQuery
+        + simplified considerably when using JSX
+    - component-level design
+        + similar to templates, web components, angular directives
+        + quickly dive from top level router down into smallest level component
+        + use chrome plugin
+        + arrow function for element lists
+
+    # D3
+    - data driven documents
+    - Mike Bostock / NY Times
+    - huge feature set
+        + DOM manipulation, animation, AJAX (like jQuery)
+        + math/geometry
+        + geography
+        + date/time
+        + string formatting
+        + color mixing
+    - sprawling and somewhat difficult to navigate documentation
+        + every time they needed a feature for a chart, they added it to d3
+    - does not actually make charts; makes useful components for charts
+    - not using its DOM manipulation at all
+        + use svg functions to generate paths
+        + compare traditional vs react approach
+    - isolating D3 components allows you to treat dynamic charts like images
+    - inline d3 in react is neither specific to d3 nor react
+        + use d3 with angular / handlebars
+        + use react with other math / formatting libraries
 
 # What We Learned 
 - the “react way” sounds bad and is contrary to the established standards
@@ -129,8 +140,3 @@ This section probably needs to be reorganized.
 - the way ive ended up making that dish is kind of unusual
     + i stack everything and put it in a bowl
     + full-stack breakfast engineer
-
-
-# Notes
-- [Magic Ink on statelessness](http://worrydream.com/MagicInk/#p270)
-
