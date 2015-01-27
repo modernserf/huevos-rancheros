@@ -21,13 +21,22 @@ var DragGroup = React.createClass({
     }
 });
 
+var addHoverStroke = function (isHover, props){
+    return isHover ? Object.assign({},props,{
+        stroke: colors.blue,
+        strokeWidth: 1,
+        strokeOpacity: 0.5
+    }) : props;
+};
+
 
 var Egg = React.createClass({
     render (){
-        var r = 15;
-        return (
+         return (
             <DragGroup {...this.props}>
-                <circle r={15} fill={"white"}/>
+                <circle {...addHoverStroke(this.props.isHover,{
+                    r: 15, fill: "white"
+                })}/>
                 <circle r={7} fill={colors.gold} 
                     style={{opacity:0.5}}/>
             </DragGroup>
@@ -40,7 +49,10 @@ var Tomato = React.createClass({
         var r = 10;
         return (
             <DragGroup {...this.props}>
-                <circle r={r} fill={colors.red}/>
+
+                <circle {...addHoverStroke(this.props.isHover,{
+                    r: r, fill: colors.red
+                })}/>
             </DragGroup>
         );
     }
@@ -91,23 +103,31 @@ var map = function (coll, fn){
     return into;
 };
 
-
 var IngredientListItem = React.createClass({
     propTypes: {
-        component: React.PropTypes.func.isRequired,
-        items: React.PropTypes.array.isRequired 
+        item: React.PropTypes.object.isRequired,
+        isHover: React.PropTypes.bool.isRequired,
+        onRemove: React.PropTypes.func.isRequired,
+        onHover: React.PropTypes.func.isRequired
     },
-    remove (){
-        this.props.onRemove(this.props.items[0].id);
+    onRemove (){
+        this.props.onRemove(this.props.item.id);
+    },
+    onHover (e){
+        e.preventDefault();
+        this.props.onHover(this.props.item.id);
     },
     render (){
-        var {component, items} = this.props;
+        var {item, isHover} = this.props;
+
+        var style = isHover ? { 
+            backgroundColor: colors.blue,
+            color: "white"
+        } : {};
 
         return (
-            <div>
-                <span>{component.displayName}</span>
-                <span>:</span>
-                <span>{items.length}</span>
+            <div style={style} onMouseEnter={this.onHover}>
+                <span>{item.component.displayName}</span>
                 <button onClick={this.remove}>remove</button>
             </div>
         );
@@ -121,9 +141,12 @@ var IngredientList = React.createClass({
         var nextIngs = ings.filter(x => x.id !== id);
         this.setGlobal('ingredients',nextIngs);
     },
+    onHover (id){
+        this.setGlobal('hoverID',id);
+    },
     render (){
         var ings = this.getGlobal('ingredients');
-        // var items = ings.reduce(collectMapOn('component'),new Map());
+        var hoverID = this.getGlobal('hoverID');
 
         return (
             <ul style={{
@@ -133,8 +156,10 @@ var IngredientList = React.createClass({
                 backgroundColor: "white"
             }}>
                 {ings.map(v =><li key={v.id}>
-                    <IngredientListItem component={v.component} items={[v]} 
-                        onRemove={this.onRemove}/>
+                    <IngredientListItem item={v}
+                        isHover={v.id === hoverID}
+                        onRemove={this.onRemove}
+                        onHover={this.onHover}/>
                 </li>)}
             </ul>
         );
@@ -145,18 +170,19 @@ var IngredientList = React.createClass({
 var Ingredients = React.createClass({
     propTypes: {
         data: React.PropTypes.array.isRequired,
+        hoverID: React.PropTypes.number,
         onSelect: React.PropTypes.func.isRequired
     },
     onSelect (id) { return (e) => this.props.onSelect(id); },
     render () {
+        var { data, hoverID} = this.props;
 
-        var items = this.props.data.map(C=> <C.component key={C.id}
-            x={C.x} y={C.y} onSelect={this.onSelect(C.id)}/>);
-
-        var tomato = this.props.data[0];
         return (
             <g>
-                {items}
+                {data.map(C=> <C.component key={C.id}
+                    x={C.x} y={C.y} 
+                    isHover={C.id === hoverID}
+                    onSelect={this.onSelect(C.id)}/>)}
             </g>
         );
     }
@@ -210,6 +236,7 @@ var Workspace = React.createClass({
     },
     render (){
         var ingredients = this.getGlobal('ingredients');
+        var hoverID = this.getGlobal('hoverID');
         var tomato = ingredients[0];
 
         var {w, h} = this.state;
@@ -229,6 +256,7 @@ var Workspace = React.createClass({
                 }}>
                     <Plate/>
                     <Ingredients data={ingredients}
+                        hoverID={hoverID}
                         onSelect={this.onSelect}/>
                 </svg>  
             </section>

@@ -10,7 +10,8 @@ import Main from 'views/Main';
 var baseTitle = "Huevos Rancheros";
 
 Atom.set('ingredients', [])
-    .set('selectedID', null);
+    .set('selectedID', null)
+    .set('hoverID', null);
 
 // string -> IO()
 var setRoute = function (href){
