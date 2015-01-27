@@ -16,7 +16,7 @@ var PageBase = React.createClass({
             left: 0,
             right: 0,
             bottom: 0,
-            minHeight: "800px",
+            // minHeight: "800px",
             backgroundColor: color,
             backgroundPosition: "center center",
             backgroundSize: "cover"

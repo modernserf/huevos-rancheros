@@ -121,7 +121,8 @@ var GlobalAtom = {
     },
     setGlobal (key, value){
         Atom.set(key, value);
-    }
+    },
+    gensym: Atom.gensym
 };
 
 export default GlobalAtom;

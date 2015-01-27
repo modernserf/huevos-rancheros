@@ -159,8 +159,8 @@ var Workspace = React.createClass({
     },
     componentWillMount (){
         this.setGlobal('ingredients',[
-            {id: 1, component: Tomato, x: 50, y: 50},
-            {id: 2, component: Egg, x: 25, y: 25}
+            {id: this.gensym(), component: Tomato, x: 50, y: 50},
+            {id: this.gensym(), component: Egg, x: 25, y: 25}
         ]);
     },
     componentDidMount (){
@@ -201,9 +201,16 @@ var Workspace = React.createClass({
         var ingredients = this.getGlobal('ingredients');
         var tomato = ingredients[0];
 
+        var {w, h} = this.state;
+
         return (
             <section onMouseMove={this.onMove}
-                onMouseUp={this.onRelease}>
+                onMouseUp={this.onRelease}
+                style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%"
+                }}>
                 <svg viewBox="0 0 100 100" style={{
                     display: "block",
                     width: "100%",

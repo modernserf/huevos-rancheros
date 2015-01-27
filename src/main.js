@@ -9,7 +9,8 @@ import Main from 'views/Main';
 
 var baseTitle = "Huevos Rancheros";
 
-Atom.set('ingredients', []);
+Atom.set('ingredients', [])
+    .set('selectedID', null);
 
 // string -> IO()
 var setRoute = function (href){
