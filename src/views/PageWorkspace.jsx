@@ -36,13 +36,13 @@ var Ingredients = React.createClass({
     onSelect (id) { return (e) => this.props.onSelect(id); },
     render () {
 
+        var items = this.props.data.map(C=> <C.component key={C.id}
+            x={C.x} y={C.y} onSelect={this.onSelect(C.id)}/>);
+
         var tomato = this.props.data[0];
         return (
             <g>
-                <Tomato x={tomato.x}
-                    y={tomato.y}
-                    onSelect={this.props.onSelect}/>
-
+                {items}
             </g>
         );
     }
@@ -51,7 +51,12 @@ var Ingredients = React.createClass({
 var Workspace = React.createClass({
     mixins: [GlobalAtom],
     getInitialState(){
-        return { isMoving: false };
+        return { w: 0, h: 0 };
+    },
+    componentWillMount (){
+        this.setGlobal('ingredients',[
+            {id: 1, component: Tomato, x: 50, y: 50}
+        ]);
     },
     componentDidMount (){
         this.setState({
@@ -59,20 +64,26 @@ var Workspace = React.createClass({
             h: window.innerHeight
         });
     },
-    onSelect (e){
-        this.setState({isMoving: true});
+    onSelect (id){
+        this.setGlobal('selectedID',id);
     },
     onMove (e){
-        var { isMoving, w, h} = this.state;
-        if (!isMoving){ return; }
+        var selectedID = this.getGlobal('selectedID');
+        if (selectedID === null){ return; }
 
-        var tomato = this.getGlobal('ingredients')[0];
-        tomato.x = 100 * e.clientX / w ;
-        tomato.y = 100 * e.clientY/ h;
-        this.setGlobal('ingredients',[tomato]);
+        var { w, h} = this.state;
+        var ingredients = this.getGlobal('ingredients');
+
+        var nextIngredients = ingredients.map(item => item.id === selectedID ?
+            Object.assign(item, {
+                x: 100 * e.clientX / w,
+                y: 100 * e.clientY/ h
+            }) : item);
+
+        this.setGlobal('ingredients',nextIngredients);
     },
     onRelease (e){
-        this.setState({isMoving: false});
+        this.setGlobal('selectedID',null);
     },
     render (){
         var ingredients = this.getGlobal('ingredients');
