@@ -17,3 +17,11 @@ export var colors = {
     blue: "#1a1aaf",
     green: "#00661b"
 };
+
+export var addHoverStroke = function (isHover, props){
+    return isHover ? Object.assign({},props,{
+        stroke: colors.blue,
+        strokeWidth: 1,
+        strokeOpacity: 0.5
+    }) : props;
+};
