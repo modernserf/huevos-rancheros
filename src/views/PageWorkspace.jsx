@@ -85,9 +85,10 @@ var Workspace = React.createClass({
         ]);
     },
     componentDidMount (){
+        var el = this.getDOMNode();
         this.setState({
-            w: window.innerWidth,
-            h: window.innerHeight
+            w: el.clientWidth,
+            h: el.clientHeight
         });
     },
     onSelect (id){
