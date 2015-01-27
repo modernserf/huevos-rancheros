@@ -49,31 +49,22 @@ The metaphor that the web is moving towards is components, and the implementatio
 
 (time series)
 
-Take this graph, which tracks the quality of my recipes over time. If you're an experienced developer this probably looks like something I've copied from w3schools. It's almost like I'm purposely ignoring every best practice for web development:
+# cats and dogs, living together
 
-- mixed template and logic
-- inline events
-- tags for layout
-- inline styles
-- no class or ids
+Take this graph, which tracks the quality of my recipes over time. If you're an experienced developer this probably looks like something I've copied from w3schools. It's almost like I'm purposely ignoring every best practice for web development -- everything is mixed together! Inline styles! There's no separation of concerns!
 
-The first part is the easiest to explain. Best practices dictate that templates should have as little logic as possible in the template; the data should be "massaged" into a form that can be consumed by the template. This is part of why people hate on PHP so hard -- logic-full templates are a first-class construct in the language. But this is conflating separation of technologies with separation of concerns -- **TKTKTK** web components
+    Well hold up. Everything in this file is related to this component. If I was going to have the template and the css and the javascript separated, that just means I'd have three files supporting this component instead of one. Best practices dictate that templates should have as little logic as possible in the template; the data should be "massaged" into a form that can be consumed by the template. This is part of why people hate on PHP so hard -- logic-full templates are a first-class construct in the language. But this is conflating separation of technologies with separation of concerns -- **TKTKTK** web components
 
-- inline events
-    + jQuery 'best practice' is to put event handlers on parents
-    + react does this for you
-    + now i don't have to think about event bubbling
-- inline styles
-    + svg styles and positions are necessarily inlined
-    + compare css class w/ style object
-    + shared style mixins / components allow for abstraction
-- CSS is great when you remove the cascade and the stylesheet parts
-    + inlining prevents style conflicts
-    + works like Shadow DOM/scoped CSS
-    + don't have to think about source order, specificity, SASS DSL
+JSX -- react's templating system -- is both its greatest strength and its biggest liability. It looks very much like HTML but works quite a bit differently, and your intuition about what is right for html doesn't always translate.
 
+Inline events, for example. Unobtrusive JavaScript says you should never bind an onClick event to an html element; you should bind an event handler to the element's class or better yet delegate to its parent. Well this isnt html, its javascript that renders html. this does not render into an event handler in html. in fact, when react renders this, it automatically lifts all the event handling to the top level component. Now I don't have to even think about event bubbling and all the weird implications that can have. If I want multiple components to share the same callback behavior, I can make that behavior a separate component and import it rather than make it global.
 
----
+Inline styles are probably an even harder pill to swallow. CSS classes are such a deeply rooted system of abstraction for web developers that we sometimes forget how broken they are. In React, the whole component is a unit of abstraction; you don't need to use a crappy one on top of it.
+
+I understand the reasoning behind the cascade, but it makes it very hard to work with deeply nested components -- I need to make sure nothing in this component's stylesheet conflicts with any of its children. But that means that in order to design this component, i need to know the inner workings of everything that its composed from -- this is so fundamentally incompatible with modularity.
+
+But if I have inline styles, that goes away. I can still share styles between components, but now its explicit instead of implicit. If I want a component to be stylable by its parents, I expose that feature explicitly. I don't have pseudo selectors like nth-child anymore, but I don't need them -- I have all of javascript at my disposal now. I don't have to think about source order, specificity, coordinating my variables between sass and javascript -- I'm freeing myself from spooky action at a distance. 
+
     # React
     - rendering library built by facebook
     - not going into details about implementation, but
