@@ -7,20 +7,45 @@ import PageBase from 'views/PageBase';
 import {Flex,FlexBox} from 'views/FlexBox';
 import {colors, fonts} from 'views/style';
 
-var Tomato = React.createClass({
+var DragGroup = React.createClass({
     render (){
-        var { x, y, onSelect } = this.props;
+        var { x, y, onSelect, children } = this.props;
 
-        var r = 10;
         return (
             <g onMouseDown={onSelect}
                 style={{cursor: "move"}}
                 transform={`translate(${x},${y})`}>
-                <circle r={r} fill={colors.red}/>
+                {children}
             </g>
         );
     }
 });
+
+
+var Egg = React.createClass({
+    render (){
+        var r = 15;
+        return (
+            <DragGroup {...this.props}>
+                <circle r={15} fill={"white"}/>
+                <circle r={7} fill={colors.gold}/>
+            </DragGroup>
+        );
+    }
+});
+
+var Tomato = React.createClass({
+    render (){
+        var r = 10;
+        return (
+            <DragGroup {...this.props}>
+                <circle r={r} fill={colors.red}/>
+            </DragGroup>
+        );
+    }
+});
+
+
 
 var Plate = React.createClass({
     render (){
@@ -55,7 +80,8 @@ var Workspace = React.createClass({
     },
     componentWillMount (){
         this.setGlobal('ingredients',[
-            {id: 1, component: Tomato, x: 50, y: 50}
+            {id: 1, component: Tomato, x: 50, y: 50},
+            {id: 2, component: Egg, x: 25, y: 25}
         ]);
     },
     componentDidMount (){
