@@ -7,6 +7,38 @@ import PageBase from 'views/PageBase';
 import {Flex,FlexBox} from 'views/FlexBox';
 import {colors, fonts} from 'views/style';
 
+var Pantry = React.createClass({
+    mixins: [GlobalAtom],
+    onClick (component){ return e => {
+        var ings = this.getGlobal('ingredients');
+
+        var next = {
+            id: this.gensym(), 
+            component: component,
+            x: 25 + Math.random() * 50,
+            y: 25 + Math.random() * 50
+        };
+
+        this.setGlobal('ingredients', ings.concat([next]));
+    };},
+    render (){
+        return (
+            <FlexBox>
+                <Flex>
+                    <button onClick={this.onClick(Egg)}>
+                        Egg
+                    </button>
+                </Flex>
+                <Flex>
+                    <button onClick={this.onClick(Tomato)}>
+                        Tomato
+                    </button>
+                </Flex>
+            </FlexBox>
+        );
+    }
+});
+
 var addHoverStroke = function (isHover, props){
     return isHover ? Object.assign({},props,{
         stroke: colors.blue,
@@ -14,7 +46,6 @@ var addHoverStroke = function (isHover, props){
         strokeOpacity: 0.5
     }) : props;
 };
-
 
 var Egg = React.createClass({
     render (){
@@ -42,8 +73,6 @@ var Tomato = React.createClass({
         );
     }
 });
-
-
 
 var Plate = React.createClass({
     render (){
@@ -120,7 +149,7 @@ var IngredientListItem = React.createClass({
                 onMouseEnter={this.onMouseEnter}
                 onMouseLeave={this.onMouseLeave}>
                 <span>{item.component.displayName}</span>
-                <button onClick={this.remove}>remove</button>
+                <button onClick={this.onRemove}>remove</button>
             </div>
         );
     }
@@ -286,10 +315,21 @@ var PageWorkspace = React.createClass({
     mixins: [GlobalAtom],
     propTypes: {},
     render (){
+        var pantryStyle = {
+            position: "fixed",
+            bottom: 0,
+            width: "100%",
+            backgroundColor: "white",
+            padding: 10
+        };
+
         return (
             <PageBase color={colors.green}>
                 <Workspace />
                 <IngredientList />
+                <section style={pantryStyle}>
+                    <Pantry />
+                </section>
             </PageBase>
         );
     }
