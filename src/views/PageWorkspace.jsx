@@ -92,21 +92,27 @@ var Workspace = React.createClass({
     },
     onSelect (id){
         this.setGlobal('selectedID',id);
+        var ingredients = this.getGlobal('ingredients');
+        // put selected ingredient at top (end) of list
+        var nextIngredients = ingredients.filter(x => x.id !== id)
+            .concat([ingredients.find(x => x.id === id)]);
+
+        this.setGlobal('ingredients',nextIngredients);
     },
     onMove (e){
         var selectedID = this.getGlobal('selectedID');
         if (selectedID === null){ return; }
 
         var { w, h} = this.state;
-        var ingredients = this.getGlobal('ingredients');
+        var igs = this.getGlobal('ingredients');
 
-        var nextIngredients = ingredients.map(item => item.id === selectedID ?
-            Object.assign(item, {
-                x: 100 * e.clientX / w,
-                y: 100 * e.clientY/ h
-            }) : item);
+        // "active ingredient" is last item
+        var nextIgs = igs.slice(0);
+        var item = nextIgs[nextIgs.length - 1];
+        item.x = 100 * e.clientX / w;
+        item.y = 100 * e.clientY/ h;
 
-        this.setGlobal('ingredients',nextIngredients);
+        this.setGlobal('ingredients',nextIgs);
     },
     onRelease (e){
         this.setGlobal('selectedID',null);
@@ -118,7 +124,7 @@ var Workspace = React.createClass({
         return (
             <section onMouseMove={this.onMove}
                 onMouseUp={this.onRelease}>
-                <svg viewBox="0 0 110 110" style={{
+                <svg viewBox="0 0 100 100" style={{
                     display: "block",
                     width: "100%",
                     height: "100%"
