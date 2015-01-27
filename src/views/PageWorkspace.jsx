@@ -7,20 +7,6 @@ import PageBase from 'views/PageBase';
 import {Flex,FlexBox} from 'views/FlexBox';
 import {colors, fonts} from 'views/style';
 
-var DragGroup = React.createClass({
-    render (){
-        var { x, y, onSelect, children } = this.props;
-
-        return (
-            <g onMouseDown={onSelect}
-                style={{cursor: "move"}}
-                transform={`translate(${x},${y})`}>
-                {children}
-            </g>
-        );
-    }
-});
-
 var addHoverStroke = function (isHover, props){
     return isHover ? Object.assign({},props,{
         stroke: colors.blue,
@@ -33,13 +19,13 @@ var addHoverStroke = function (isHover, props){
 var Egg = React.createClass({
     render (){
          return (
-            <DragGroup {...this.props}>
+            <g>
                 <circle {...addHoverStroke(this.props.isHover,{
                     r: 15, fill: "white"
                 })}/>
                 <circle r={7} fill={colors.gold} 
                     style={{opacity:0.5}}/>
-            </DragGroup>
+            </g>
         );
     }
 });
@@ -48,12 +34,11 @@ var Tomato = React.createClass({
     render (){
         var r = 10;
         return (
-            <DragGroup {...this.props}>
-
+            <g>
                 <circle {...addHoverStroke(this.props.isHover,{
                     r: r, fill: colors.red
                 })}/>
-            </DragGroup>
+            </g>
         );
     }
 });
@@ -166,10 +151,47 @@ var IngredientList = React.createClass({
     }
 });
 
+var DragGroup = React.createClass({
+    render (){
+        var { x, y, onSelect, children } = this.props;
+
+        return (
+            <g onMouseDown={onSelect}
+                
+                >
+                {children}
+            </g>
+        );
+    }
+});
+
+// replaces DragGroup
+var IngredientSVGWrapper  = React.createClass({
+    onSelect (e){
+        this.props.onSelect(this.props.item.id);
+    },
+    onHover (e){
+        e.preventDefault();
+        this.props.onHover(this.props.item.id);  
+    },
+    render (){
+        var {item, hoverID} = this.props;
+        var Component = item.component;
+
+        return (
+            <g  onMouseEnter={this.onHover}
+                onMouseDown={this.onSelect}
+                style={{cursor: "move"}}
+                transform={`translate(${item.x},${item.y})`}>
+                <Component isHover={item.id === hoverID}/>
+            </g>
+        );
+    }
+});
 
 var Ingredients = React.createClass({
     mixins: [GlobalAtom],
-    onSelect (id){ return (e) => {
+    onSelect (id){
         this.setGlobal('selectedID',id);
         var ingredients = this.getGlobal('ingredients');
         // put selected ingredient at top (end) of list
@@ -177,17 +199,21 @@ var Ingredients = React.createClass({
             .concat([ingredients.find(x => x.id === id)]);
 
         this.setGlobal('ingredients',nextIngredients);   
-    };},
+    },
+    onHover (id){
+        this.setGlobal('hoverID',id);
+    },
     render () {
         var ings = this.getGlobal('ingredients');
         var hoverID = this.getGlobal('hoverID');
 
         return (
             <g>
-                {ings.map(C=> <C.component key={C.id}
-                    x={C.x} y={C.y} 
-                    isHover={C.id === hoverID}
-                    onSelect={this.onSelect(C.id)}/>)}
+                {ings.map(item => <IngredientSVGWrapper key={item.id}
+                    item={item}
+                    hoverID={hoverID}
+                    onSelect={this.onSelect}
+                    onHover={this.onHover}/>)}
             </g>
         );
     }
