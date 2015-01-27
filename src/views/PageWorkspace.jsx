@@ -97,6 +97,9 @@ var IngredientListItem = React.createClass({
         component: React.PropTypes.func.isRequired,
         items: React.PropTypes.array.isRequired 
     },
+    remove (){
+        this.props.onRemove(this.props.items[0].id);
+    },
     render (){
         var {component, items} = this.props;
 
@@ -105,6 +108,7 @@ var IngredientListItem = React.createClass({
                 <span>{component.displayName}</span>
                 <span>:</span>
                 <span>{items.length}</span>
+                <button onClick={this.remove}>remove</button>
             </div>
         );
     }
@@ -112,6 +116,11 @@ var IngredientListItem = React.createClass({
 
 var IngredientList = React.createClass({
     mixins: [GlobalAtom],
+    onRemove (id){
+        var ings = this.getGlobal('ingredients');
+        var nextIngs = ings.filter(x => x.id !== id);
+        this.setGlobal('ingredients',nextIngs);
+    },
     render (){
         var ings = this.getGlobal('ingredients');
         // var items = ings.reduce(collectMapOn('component'),new Map());
@@ -124,7 +133,8 @@ var IngredientList = React.createClass({
                 backgroundColor: "white"
             }}>
                 {ings.map(v =><li key={v.id}>
-                    <IngredientListItem component={v.component} items={[v]}/>
+                    <IngredientListItem component={v.component} items={[v]} 
+                        onRemove={this.onRemove}/>
                 </li>)}
             </ul>
         );
@@ -160,7 +170,8 @@ var Workspace = React.createClass({
     componentWillMount (){
         this.setGlobal('ingredients',[
             {id: this.gensym(), component: Tomato, x: 50, y: 50},
-            {id: this.gensym(), component: Egg, x: 25, y: 25}
+            {id: this.gensym(), component: Egg, x: 25, y: 25},
+            {id: this.gensym(), component: Egg, x: 75, y: 25}
         ]);
     },
     componentDidMount (){
