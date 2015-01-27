@@ -4,12 +4,17 @@ import React        from 'react';
 import GlobalAtom   from 'mixins/GlobalAtom';
 import {colors} from 'views/style';
 
+import IngredientManager from 'mixins/IngredientManager';
+
 export var IngredientListItem = React.createClass({
     propTypes: {
         item: React.PropTypes.object.isRequired,
         isHover: React.PropTypes.bool.isRequired,
         onRemove: React.PropTypes.func.isRequired,
         onHover: React.PropTypes.func.isRequired
+    },
+    onSelect (){
+        this.props.onSelect(this.props.item.id);
     },
     onRemove (){
         this.props.onRemove(this.props.item.id);
@@ -35,7 +40,7 @@ export var IngredientListItem = React.createClass({
             <div style={style} 
                 onMouseEnter={this.onMouseEnter}
                 onMouseLeave={this.onMouseLeave}>
-                <span>{item.component.displayName}</span>
+                <span onClick={this.onSelect}>{item.component.displayName}</span>
                 <button onClick={this.onRemove}>remove</button>
             </div>
         );
@@ -43,14 +48,15 @@ export var IngredientListItem = React.createClass({
 });
 
 var IngredientList = React.createClass({
-    mixins: [GlobalAtom],
+    mixins: [GlobalAtom,IngredientManager],
     onRemove (id){
         var ings = this.getGlobal('ingredients');
         var nextIngs = ings.filter(x => x.id !== id);
         this.setGlobal('ingredients',nextIngs);
     },
-    onHover (id){
-        this.setGlobal('hoverID',id);
+    onSelectAndRelease (id){
+        this.onSelect(id);
+        this.setGlobal('selectedID',null);
     },
     render (){
         var ings = this.getGlobal('ingredients');
@@ -67,6 +73,7 @@ var IngredientList = React.createClass({
                     <IngredientListItem item={v}
                         isHover={v.id === hoverID}
                         onRemove={this.onRemove}
+                        onSelect={this.onSelectAndRelease}
                         onHover={this.onHover}/>
                 </li>)}
             </ul>

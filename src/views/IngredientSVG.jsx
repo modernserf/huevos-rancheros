@@ -2,6 +2,7 @@
 
 import React        from 'react';
 import GlobalAtom   from 'mixins/GlobalAtom';
+import IngredientManager from 'mixins/IngredientManager';
 
 export var IngredientSVGWrapper  = React.createClass({
     onSelect (e){
@@ -32,19 +33,7 @@ export var IngredientSVGWrapper  = React.createClass({
 });
 
 var Ingredients = React.createClass({
-    mixins: [GlobalAtom],
-    onSelect (id){
-        this.setGlobal('selectedID',id);
-        var ingredients = this.getGlobal('ingredients');
-        // put selected ingredient at top (end) of list
-        var nextIngredients = ingredients.filter(x => x.id !== id)
-            .concat([ingredients.find(x => x.id === id)]);
-
-        this.setGlobal('ingredients',nextIngredients);   
-    },
-    onHover (id){
-        this.setGlobal('hoverID',id);
-    },
+    mixins: [GlobalAtom, IngredientManager],
     render () {
         var ings = this.getGlobal('ingredients');
         var hoverID = this.getGlobal('hoverID');
