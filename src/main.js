@@ -9,6 +9,10 @@ import Main from 'views/Main';
 
 var baseTitle = "Huevos Rancheros";
 
+Atom.set('ingredients', [
+    {type: "tomato", x: 50, y: 50}
+]);
+
 // string -> IO()
 var setRoute = function (href){
     var [ ,routeID] = href.split("#");

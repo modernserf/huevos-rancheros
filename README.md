@@ -13,6 +13,8 @@ and thats what im trying to do. so im making an app that's gonna help me explore
 
 The app will also give me random ingredients and constraints, like a culinary oblique strategies. Its often hard to tell the difference between a terrible idea and a great one -- beer and cheese don't sound like good ideas when you describe them -- so I want to have an element of chaos in there to ensure I'm really _exploring_ the huevos rancheros space.
 
+[ show something cool here ]
+
 # what is an app
 So I'm building a web app. Why a web app? What makes this an app and not just a site? In the traditional model of the web, pages are documents with links and an outline structure, with the content and structure in html, the design in css, and "extra stuff" in javascript, and you access the document with a browser. The web app model adds a layer of indirection to this, so instead of the browser being a document viewer, you make custom documents and a custom viewer and the browser becomes a ... document viewer viewer.
 
