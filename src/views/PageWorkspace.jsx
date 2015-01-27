@@ -98,20 +98,27 @@ var IngredientListItem = React.createClass({
     onRemove (){
         this.props.onRemove(this.props.item.id);
     },
-    onHover (e){
+    onMouseEnter (e){
         e.preventDefault();
         this.props.onHover(this.props.item.id);
+    },
+    onMouseLeave (e){
+        e.preventDefault();
+        this.props.onHover(null);
     },
     render (){
         var {item, isHover} = this.props;
 
         var style = isHover ? { 
             backgroundColor: colors.blue,
-            color: "white"
+            color: "white",
+            cursor: "pointer"
         } : {};
 
         return (
-            <div style={style} onMouseEnter={this.onHover}>
+            <div style={style} 
+                onMouseEnter={this.onMouseEnter}
+                onMouseLeave={this.onMouseLeave}>
                 <span>{item.component.displayName}</span>
                 <button onClick={this.remove}>remove</button>
             </div>
@@ -151,35 +158,25 @@ var IngredientList = React.createClass({
     }
 });
 
-var DragGroup = React.createClass({
-    render (){
-        var { x, y, onSelect, children } = this.props;
-
-        return (
-            <g onMouseDown={onSelect}
-                
-                >
-                {children}
-            </g>
-        );
-    }
-});
-
-// replaces DragGroup
 var IngredientSVGWrapper  = React.createClass({
     onSelect (e){
         this.props.onSelect(this.props.item.id);
     },
-    onHover (e){
+    onMouseEnter (e){
         e.preventDefault();
         this.props.onHover(this.props.item.id);  
+    },
+    onMouseLeave (e){
+        e.preventDefault();
+        this.props.onHover(null);
     },
     render (){
         var {item, hoverID} = this.props;
         var Component = item.component;
 
         return (
-            <g  onMouseEnter={this.onHover}
+            <g  onMouseEnter={this.onMouseEnter}
+                onMouseLeave={this.onMouseLeave}
                 onMouseDown={this.onSelect}
                 style={{cursor: "move"}}
                 transform={`translate(${item.x},${item.y})`}>
@@ -240,6 +237,7 @@ var Workspace = React.createClass({
     },
     onMove (e){
         var selectedID = this.getGlobal('selectedID');
+        var hoverID = this.getGlobal('hoverID');
         if (selectedID === null){ return; }
 
         var { w, h} = this.state;
