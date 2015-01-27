@@ -155,7 +155,7 @@ var IngredientList = React.createClass({
                 left: 0,
                 backgroundColor: "white"
             }}>
-                {ings.map(v =><li key={v.id}>
+                {ings.slice(0).reverse().map(v =><li key={v.id}>
                     <IngredientListItem item={v}
                         isHover={v.id === hoverID}
                         onRemove={this.onRemove}
@@ -168,18 +168,23 @@ var IngredientList = React.createClass({
 
 
 var Ingredients = React.createClass({
-    propTypes: {
-        data: React.PropTypes.array.isRequired,
-        hoverID: React.PropTypes.number,
-        onSelect: React.PropTypes.func.isRequired
-    },
-    onSelect (id) { return (e) => this.props.onSelect(id); },
+    mixins: [GlobalAtom],
+    onSelect (id){ return (e) => {
+        this.setGlobal('selectedID',id);
+        var ingredients = this.getGlobal('ingredients');
+        // put selected ingredient at top (end) of list
+        var nextIngredients = ingredients.filter(x => x.id !== id)
+            .concat([ingredients.find(x => x.id === id)]);
+
+        this.setGlobal('ingredients',nextIngredients);   
+    };},
     render () {
-        var { data, hoverID} = this.props;
+        var ings = this.getGlobal('ingredients');
+        var hoverID = this.getGlobal('hoverID');
 
         return (
             <g>
-                {data.map(C=> <C.component key={C.id}
+                {ings.map(C=> <C.component key={C.id}
                     x={C.x} y={C.y} 
                     isHover={C.id === hoverID}
                     onSelect={this.onSelect(C.id)}/>)}
@@ -206,15 +211,6 @@ var Workspace = React.createClass({
             w: el.clientWidth,
             h: el.clientHeight
         });
-    },
-    onSelect (id){
-        this.setGlobal('selectedID',id);
-        var ingredients = this.getGlobal('ingredients');
-        // put selected ingredient at top (end) of list
-        var nextIngredients = ingredients.filter(x => x.id !== id)
-            .concat([ingredients.find(x => x.id === id)]);
-
-        this.setGlobal('ingredients',nextIngredients);
     },
     onMove (e){
         var selectedID = this.getGlobal('selectedID');
@@ -255,9 +251,7 @@ var Workspace = React.createClass({
                     height: "100%"
                 }}>
                     <Plate/>
-                    <Ingredients data={ingredients}
-                        hoverID={hoverID}
-                        onSelect={this.onSelect}/>
+                    <Ingredients />
                 </svg>  
             </section>
         );
