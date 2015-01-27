@@ -32,6 +32,22 @@ var Plate = React.createClass({
     }
 });
 
+var Ingredients = React.createClass({
+    onSelect (id) { return (e) => this.props.onSelect(id); },
+    render () {
+
+        var tomato = this.props.data[0];
+        return (
+            <g>
+                <Tomato x={tomato.x}
+                    y={tomato.y}
+                    onSelect={this.props.onSelect}/>
+
+            </g>
+        );
+    }
+});
+
 var Workspace = React.createClass({
     mixins: [GlobalAtom],
     getInitialState(){
@@ -71,8 +87,7 @@ var Workspace = React.createClass({
                     height: "100%"
                 }}>
                     <Plate/>
-                    <Tomato x={tomato.x}
-                        y={tomato.y}
+                    <Ingredients data={ingredients}
                         onSelect={this.onSelect}/>
                 </svg>  
             </section>
