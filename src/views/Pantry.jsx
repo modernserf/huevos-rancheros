@@ -6,6 +6,20 @@ import {Flex, FlexBox} from 'views/FlexBox';
 import Egg from 'views/Egg';
 import Tomato from 'views/Tomato';
 
+import {colors, addHoverStroke} from 'views/style'; 
+var Tortilla = React.createClass({
+    render () {
+        return (
+            <circle {...addHoverStroke(this.props.isHover,{
+                r: 25, fill: "beige"
+            })}/>
+        );
+    }
+});
+
+
+var PantryItems = [Egg, Tomato, Tortilla];
+
 export var PantryButton = React.createClass({
     onClick (e){
         this.props.onClick(this.props.item);
@@ -14,7 +28,10 @@ export var PantryButton = React.createClass({
         var Component = this.props.item;
 
         return (
-            <button onClick={this.onClick}>
+            <button onClick={this.onClick} style={{
+                backgroundColor: colors.green,
+                color: colors.gold
+            }}>
                 <svg viewBox="0 0 50 50" style={{
                     width: 100,
                     height: 100,
@@ -43,14 +60,13 @@ export var Pantry = React.createClass({
         this.setGlobal('ingredients', ings.concat([next]));
     },
     render (){
+        var items = PantryItems.map((p,i) => <Flex key={i}>
+             <PantryButton item={p} onClick={this.onClick}/>
+        </Flex>);
+
         return (
             <FlexBox>
-                <Flex>
-                    <PantryButton item={Egg} onClick={this.onClick}/>
-                </Flex>
-                <Flex>
-                    <PantryButton item={Tomato} onClick={this.onClick}/>
-                </Flex>
+                {items}
             </FlexBox>
         );
     }
