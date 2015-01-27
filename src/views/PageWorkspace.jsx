@@ -28,7 +28,8 @@ var Egg = React.createClass({
         return (
             <DragGroup {...this.props}>
                 <circle r={15} fill={"white"}/>
-                <circle r={7} fill={colors.gold}/>
+                <circle r={7} fill={colors.gold} 
+                    style={{opacity:0.5}}/>
             </DragGroup>
         );
     }
@@ -57,7 +58,85 @@ var Plate = React.createClass({
     }
 });
 
+var collectMapOn = function (key){
+    return (coll, item) => {
+        var subcoll = coll.get(item[key]) || [];
+        subcoll.push(item);
+        coll.set(item[key], subcoll);
+        return coll;
+    };
+};
+
+var reduce = function (coll, fn, into){
+    var iter = coll.entries();
+    var item = iter.next();
+    while (!item.done){
+        // into, value, key
+        into = fn(into, item.value[1], item.value[0], coll);
+        item = iter.next();
+    }
+    return into;
+};
+
+var map = function (coll, fn){
+    var into = new coll.constructor();
+    var iter = coll.entries();
+    var item = iter.next();
+    while (!item.done){
+        // into, value, key
+        into.set(item.value[0], fn(item.value[1], item.value[0], coll ));
+        item = iter.next();
+    }
+
+    return into;
+};
+
+
+var IngredientListItem = React.createClass({
+    propTypes: {
+        component: React.PropTypes.func.isRequired,
+        items: React.PropTypes.array.isRequired 
+    },
+    render (){
+        var {component, items} = this.props;
+
+        return (
+            <div>
+                <span>{component.displayName}</span>
+                <span>:</span>
+                <span>{items.length}</span>
+            </div>
+        );
+    }
+});
+
+var IngredientList = React.createClass({
+    mixins: [GlobalAtom],
+    render (){
+        var ings = this.getGlobal('ingredients');
+        // var items = ings.reduce(collectMapOn('component'),new Map());
+
+        return (
+            <ul style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                backgroundColor: "white"
+            }}>
+                {ings.map(v =><li key={v.id}>
+                    <IngredientListItem component={v.component} items={[v]}/>
+                </li>)}
+            </ul>
+        );
+    }
+});
+
+
 var Ingredients = React.createClass({
+    propTypes: {
+        data: React.PropTypes.array.isRequired,
+        onSelect: React.PropTypes.func.isRequired
+    },
     onSelect (id) { return (e) => this.props.onSelect(id); },
     render () {
 
@@ -146,6 +225,7 @@ var PageWorkspace = React.createClass({
         return (
             <PageBase color={colors.green}>
                 <Workspace />
+                <IngredientList />
             </PageBase>
         );
     }
