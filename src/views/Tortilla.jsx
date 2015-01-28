@@ -6,10 +6,14 @@ import {colors, addHoverStroke} from 'views/style';
 var ClipPath = "clipPath";
 
 var Tortilla = React.createClass({
-    spots: [],
+    getInitialState () {
+        return {
+            spots: []
+        };
+    },
     componentWillMount (){
         for (var i = 0; i < 100; i++) {
-            this.spots[i] = [Math.random(), Math.random() * 2 - 1,Math.random() * 2 -1];
+            this.state.spots[i] = [Math.random(), Math.random() * 2 - 1,Math.random() * 2 -1];
         }
     },
     render () {
@@ -20,7 +24,7 @@ var Tortilla = React.createClass({
 
         var r = 25;
 
-        var spots = this.spots.filter((x,i) => i < (density * 100))
+        var spots = this.state.spots.filter((x,i) => i < (density * 100))
             .map((x,i) => <circle key={i} 
                     fill={colors.brown} r={x[0]}
                     cx={x[1] * r} cy={x[2] * r}/>);

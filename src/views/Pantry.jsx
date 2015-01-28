@@ -6,10 +6,13 @@ import {Flex, FlexBox} from 'views/FlexBox';
 import Egg from 'views/Egg';
 import Tomato from 'views/Tomato';
 import Tortilla from 'views/Tortilla';
+import Cheese from 'views/Cheese';
+import Salsa from 'views/Salsa';
 
 import {colors} from 'views/style'; 
 
-var PantryItems = [Egg, Tomato, Tortilla];
+
+var PantryItems = [Egg, Tomato, Tortilla, Salsa, Cheese];
 
 export var PantryButton = React.createClass({
     onClick (e){
