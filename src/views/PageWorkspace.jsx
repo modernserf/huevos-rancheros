@@ -30,10 +30,13 @@ var Workspace = React.createClass({
         ]);
     },
     componentDidMount (){
-        var el = this.getDOMNode();
+        this.setWindowSize();
+        window.addEventListener('resize', this.setWindowSize);
+    },
+    setWindowSize (){
         this.setState({
-            w: el.clientWidth,
-            h: el.clientHeight
+            w: window.innerWidth,
+            h: window.innerHeight
         });
     },
     // These should move into the mixin
@@ -48,8 +51,11 @@ var Workspace = React.createClass({
         // "active ingredient" is last item
         var nextIgs = igs.slice(0);
         var item = nextIgs[nextIgs.length - 1];
-        item.x = 100 * e.clientX / w;
-        item.y = 100 * e.clientY/ h;
+
+        var size = Math.min(w,h);
+
+        item.x = (100 * (e.clientX + (size - w)/2) /w * w/size);
+        item.y = (100 * (e.clientY + (size - h)/2) /h * h/size);
 
         this.setGlobal('ingredients',nextIgs);
     },
