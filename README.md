@@ -27,7 +27,9 @@ In the render method, I define the template for the egg, and I handle the data t
 
 ## Pantry.jsx
 
-I use the same Egg component both in the pantry and on the plate. In the pantry, I make a button for every ingredient i have; when I click a button, it's handled by this onClick method which adds a new ingredient to the global state, which triggers a redraw in all the components that consume the global state.  
+I use the same Egg component both in the pantry and on the plate. Here I've got a list of all my ingredients -- Egg, Tomato, Tortilla, Salsa, and Cheese -- they all have the same interface. 
+
+ In the pantry, I make a button for every ingredient i have; when I click a button, it's handled by this onClick method which adds a new ingredient to the global state, which triggers a redraw in all the components that consume the global state.  
 
 ## IngredientSVG.jsx
 
@@ -40,15 +42,15 @@ This feels a lot like 2-way binding in Angular but its actually a lot simpler --
 
     Well hold up. Everything in this file is related to this component. If I was going to have the template and the css and the javascript separated, that just means I'd have three files supporting this component instead of one. Best practices dictate that templates should have as little logic as possible in the template; the data should be "massaged" into a form that can be consumed by the template. This is part of why people hate on PHP so hard -- logic-full templates are a first-class construct in the language. But this is conflating separation of technologies with separation of concerns -- **TKTKTK** web components
 
-JSX -- react's templating system -- is both its greatest strength and its biggest liability. It looks very much like HTML but works quite a bit differently, and your intuition about what is right for html doesn't always translate.
+    JSX -- react's templating system -- is both its greatest strength and its biggest liability. It looks very much like HTML but works quite a bit differently, and your intuition about what is right for html doesn't always translate.
 
-Inline events, for example. Unobtrusive JavaScript says you should never bind an onClick event to an html element; you should bind an event handler to the element's class or better yet delegate to its parent. Well this isnt html, its javascript that renders html. this does not render into an event handler in html. in fact, when react renders this, it automatically lifts all the event handling to the top level component. Now I don't have to even think about event bubbling and all the weird implications that can have. If I want multiple components to share the same callback behavior, I can make that behavior a separate component and import it rather than make it global.
+    Inline events, for example. Unobtrusive JavaScript says you should never bind an onClick event to an html element; you should bind an event handler to the element's class or better yet delegate to its parent. Well this isnt html, its javascript that renders html. this does not render into an event handler in html. in fact, when react renders this, it automatically lifts all the event handling to the top level component. Now I don't have to even think about event bubbling and all the weird implications that can have. If I want multiple components to share the same callback behavior, I can make that behavior a separate component and import it rather than make it global.
 
-Inline styles are probably an even harder pill to swallow. CSS classes are such a deeply rooted system of abstraction for web developers that we sometimes forget how broken they are. In React, the whole component is a unit of abstraction; you don't need to use a crappy one on top of it.
+    Inline styles are probably an even harder pill to swallow. CSS classes are such a deeply rooted system of abstraction for web developers that we sometimes forget how broken they are. In React, the whole component is a unit of abstraction; you don't need to use a crappy one on top of it.
 
-I understand the reasoning behind the cascade, but it makes it very hard to work with deeply nested components -- I need to make sure nothing in this component's stylesheet conflicts with any of its children. But that means that in order to design this component, i need to know the inner workings of everything that its composed from -- this is so fundamentally incompatible with modularity.
+    I understand the reasoning behind the cascade, but it makes it very hard to work with deeply nested components -- I need to make sure nothing in this component's stylesheet conflicts with any of its children. But that means that in order to design this component, i need to know the inner workings of everything that its composed from -- this is so fundamentally incompatible with modularity.
 
-But if I have inline styles, that goes away. I can still share styles between components, but now its explicit instead of implicit. If I want a component to be stylable by its parents, I expose that feature explicitly. I don't have pseudo selectors like nth-child anymore, but I don't need them -- I have all of javascript at my disposal now. I don't have to think about source order, specificity, coordinating my variables between sass and javascript -- I'm freeing myself from spooky action at a distance. 
+    But if I have inline styles, that goes away. I can still share styles between components, but now its explicit instead of implicit. If I want a component to be stylable by its parents, I expose that feature explicitly. I don't have pseudo selectors like nth-child anymore, but I don't need them -- I have all of javascript at my disposal now. I don't have to think about source order, specificity, coordinating my variables between sass and javascript -- I'm freeing myself from spooky action at a distance. 
 
     # React
     - rendering library built by facebook
@@ -66,27 +68,6 @@ But if I have inline styles, that goes away. I can still share styles between co
         + quickly dive from top level router down into smallest level component
         + use chrome plugin
         + arrow function for element lists
-
-    # D3
-    - data driven documents
-    - Mike Bostock / NY Times
-    - huge feature set
-        + DOM manipulation, animation, AJAX (like jQuery)
-        + math/geometry
-        + geography
-        + date/time
-        + string formatting
-        + color mixing
-    - sprawling and somewhat difficult to navigate documentation
-        + every time they needed a feature for a chart, they added it to d3
-    - does not actually make charts; makes useful components for charts
-    - not using its DOM manipulation at all
-        + use svg functions to generate paths
-        + compare traditional vs react approach
-    - isolating D3 components allows you to treat dynamic charts like images
-    - inline d3 in react is neither specific to d3 nor react
-        + use d3 with angular / handlebars
-        + use react with other math / formatting libraries
 
 # what is an app
 So I'm building a web app. Why a web app? What makes this an app and not just a site? In the traditional model of the web, pages are documents with links and an outline structure, with the content and structure in html, the design in css, and "extra stuff" in javascript, and you access the document with a browser. The web app model adds a layer of indirection to this, so instead of the browser being a document viewer, you make custom documents and a custom viewer and the browser becomes a ... document viewer viewer.
