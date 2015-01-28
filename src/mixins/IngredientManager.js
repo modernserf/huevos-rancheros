@@ -12,6 +12,16 @@ var IngredientManager = {
     },
     onHover (id){
         this.setGlobal('hoverID',id);
+    },
+    onCook (params){
+        var {id, value} = params;
+        var igs = this.getGlobal('ingredients');
+
+        var nextIgs = igs.map(x => x.id === id ? 
+            Object.assign(x,{ cook: value }) :
+            x);
+        
+        this.setGlobal('ingredients', nextIgs);
     }
 };
 

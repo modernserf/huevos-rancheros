@@ -5,18 +5,9 @@ import {Flex, FlexBox} from 'views/FlexBox';
 
 import Egg from 'views/Egg';
 import Tomato from 'views/Tomato';
+import Tortilla from 'views/Tortilla';
 
-import {colors, addHoverStroke} from 'views/style'; 
-var Tortilla = React.createClass({
-    render () {
-        return (
-            <circle {...addHoverStroke(this.props.isHover,{
-                r: 25, fill: "beige"
-            })}/>
-        );
-    }
-});
-
+import {colors} from 'views/style'; 
 
 var PantryItems = [Egg, Tomato, Tortilla];
 
@@ -54,7 +45,8 @@ export var Pantry = React.createClass({
             id: this.gensym(), 
             component: component,
             x: 25 + Math.random() * 50,
-            y: 25 + Math.random() * 50
+            y: 25 + Math.random() * 50,
+            cook: 0.5
         };
 
         this.setGlobal('ingredients', ings.concat([next]));

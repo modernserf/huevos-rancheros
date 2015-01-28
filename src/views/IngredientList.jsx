@@ -6,6 +6,28 @@ import {colors} from 'views/style';
 
 import IngredientManager from 'mixins/IngredientManager';
 
+var PercentSlider =React.createClass({
+    propTypes: {
+        value: React.PropTypes.number,
+        style: React.PropTypes.object,
+        onChange: React.PropTypes.func
+    },
+    onChange (e){
+        this.props.onChange(e.target.value / 100);
+    },
+    render (){
+        var {value, style} = this.props;
+
+        return (
+            <input type="range" 
+                min="1" max="100" step="1" 
+                value={(value || 0) * 100}
+                onChange={this.onChange}
+                style={style}/>
+        );
+    }
+});
+
 export var IngredientListItem = React.createClass({
     propTypes: {
         item: React.PropTypes.object.isRequired,
@@ -18,6 +40,12 @@ export var IngredientListItem = React.createClass({
     },
     onRemove (){
         this.props.onRemove(this.props.item.id);
+    },
+    onCook (value){
+        this.props.onCook({
+            id: this.props.item.id,
+            value: value
+        });
     },
     onMouseEnter (e){
         e.preventDefault();
@@ -41,6 +69,7 @@ export var IngredientListItem = React.createClass({
                 onMouseEnter={this.onMouseEnter}
                 onMouseLeave={this.onMouseLeave}>
                 <span onClick={this.onSelect}>{item.component.displayName}</span>
+                <PercentSlider value={item.cook} onChange={this.onCook}/>
                 <button onClick={this.onRemove}>remove</button>
             </div>
         );
@@ -74,6 +103,7 @@ var IngredientList = React.createClass({
                         isHover={v.id === hoverID}
                         onRemove={this.onRemove}
                         onSelect={this.onSelectAndRelease}
+                        onCook={this.onCook}
                         onHover={this.onHover}/>
                 </li>)}
             </ul>

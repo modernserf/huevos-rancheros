@@ -9,6 +9,7 @@ import {colors, fonts, addHoverStroke} from 'views/style';
 
 import Egg from 'views/Egg';
 import Tomato from 'views/Tomato';
+import Tortilla from 'views/Tortilla';
 import Pantry from 'views/Pantry';
 import Plate from 'views/Plate';
 
@@ -23,9 +24,9 @@ var Workspace = React.createClass({
     },
     componentWillMount (){
         this.setGlobal('ingredients',[
-            {id: this.gensym(), component: Tomato, x: 50, y: 50},
-            {id: this.gensym(), component: Egg, x: 25, y: 25},
-            {id: this.gensym(), component: Egg, x: 75, y: 25}
+            {id: this.gensym(), component: Tortilla, x: 50, y: 50, cook: 0.5},
+            {id: this.gensym(), component: Tomato, x: 60, y: 35, cook: 0},
+            {id: this.gensym(), component: Egg, x: 25, y: 25, cook: 0.5}
         ]);
     },
     componentDidMount (){
@@ -35,6 +36,7 @@ var Workspace = React.createClass({
             h: el.clientHeight
         });
     },
+    // These should move into the mixin
     onMove (e){
         var selectedID = this.getGlobal('selectedID');
         var hoverID = this.getGlobal('hoverID');
@@ -54,6 +56,7 @@ var Workspace = React.createClass({
     onRelease (e){
         this.setGlobal('selectedID',null);
     },
+    ///
     render (){
         var ingredients = this.getGlobal('ingredients');
         var hoverID = this.getGlobal('hoverID');

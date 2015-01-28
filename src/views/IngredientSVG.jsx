@@ -26,7 +26,7 @@ export var IngredientSVGWrapper  = React.createClass({
                 onMouseDown={this.onSelect}
                 style={{cursor: "move"}}
                 transform={`translate(${item.x},${item.y})`}>
-                <Component isHover={item.id === hoverID}/>
+                <Component isHover={item.id === hoverID} data={item}/>
             </g>
         );
     }

@@ -15,7 +15,8 @@ export var colors = {
     gold: "#fabb00",
     red: "#890f00",
     blue: "#1a1aaf",
-    green: "#00661b"
+    green: "#00661b",
+    brown: "#402c28"
 };
 
 export var addHoverStroke = function (isHover, props){
