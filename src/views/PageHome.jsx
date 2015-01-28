@@ -23,7 +23,7 @@ var PageHome = React.createClass({
                             fontSize: 24,
                             textShadow: `black 1px 1px`,
                             marginTop: -24
-                        },fonts.hedLight)}>Beyond Documents with D3, React, and</h2>
+                        },fonts.hedLight)}>Exploring React.js with</h2>
                         <h1 style={Object.assign({
                             color: colors.gold,
                             textAlign: "center",

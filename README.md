@@ -2,58 +2,41 @@
 Exploring web application development with huevos rancheros
 
 # introduction
-i consider myself an adventurous eater but i dunno, there's just something about being a twentysomething in brooklyn that makes me obsessed with brunch. cause a lot of times youll see the same six things on the menu every place you go. and even then i always get eggs benedict.
+there's just something about being a twentysomething in brooklyn that makes me obsessed with brunch. not just going out for brunch either -- even when i'm home alone i find myself making a full meal for breakfast. Pop-tarts just don't cut it for me anymore.
 
-but everybody does eggs benedict a little differently right? Like we all have an abstract notion of what eggs benedict is but its not like theres some sort of platonic ideal eggs bene that these places are trying to live up to. Every take on it is a little bit different even though they're all identifiably of a piece.
-
-now when im making breakfast at home im not making eggs benedict. if im hungry im not gonna go through poaching eggs and making hollandaise. what i end up doing is usually a variation on huevos rancheros, which is fried eggs, sofrito and tortillas. And that's an even more abstract notion of a dish -- like, it seems so simple that its just _always_ been around -- but you could eat something identifiable as huevos rancheros every day and still never have the same meal twice.
+This works because a lot of the standard breakfast recipes -- you know, the lumberjack breakfast, omelets, full english, that sort of thing -- is that they're really easy to improvise on. Everyone's got an idea of what its supposed to be, but I don't need to pull out a recipe card to get it right. They aren't recipes so much as _design patterns._ 
 
 # app specification
-and thats what im trying to do. so im making an app that's gonna help me explore huevos rancheros. its gonna be my experimental partner in a huevos rancheros laboatory where i can try new recipes and track my results. 
+Now obviously I spend a lot of time thinking about this. But I'm a web developer -- I spend my working hours making analytics software -- so I kinda see everything through that lens. So I'm making this app where I can sketch out some of my breakfast ideas.
 
-The app will also give me random ingredients and constraints, like a culinary oblique strategies. Its often hard to tell the difference between a terrible idea and a great one -- beer and cheese don't sound like good ideas when you describe them -- so I want to have an element of chaos in there to ensure I'm really _exploring_ the huevos rancheros space.
-
-[ show something cool here ]
-
-# what is an app
-So I'm building a web app. Why a web app? What makes this an app and not just a site? In the traditional model of the web, pages are documents with links and an outline structure, with the content and structure in html, the design in css, and "extra stuff" in javascript, and you access the document with a browser. The web app model adds a layer of indirection to this, so instead of the browser being a document viewer, you make custom documents and a custom viewer and the browser becomes a ... document viewer viewer.
-
-    Its easy to forget this but the book is a form of technology; it is both a document and a machine for reading the document. The content _can_ often be separated from its layout, its style, the size of the page, the quality of the paper, the book's pagination -- but all of those are features of the book-as-artifact. 
-
-This is actually a good thing. 
-
-HTML and CSS are pretty good at representing a particular kind of document, but they do not encompass all documents. an article is not a photo is not a calendar is not a presentation is not a tweet, and they have varying abilities to map to semantic HTML, but they are all documents. The "document" is an abstract concept that can have infinite representations, but we need to shoehorn it into this one format based on a series of bad decisions made 20 years ago. 
-
-    A note on best practices.
-
-    so i want to have interactive recipes and reports tracking which ones are successful. I've gotta represent these in html somehow, but before I get there I must consider what html is _for_.
-
-    html was originally created in the early 90s as a way to format and link technical documents. for the first years of its life new features weren't so much designed as grown; netscape and microsoft introduced new tags and attributes to allow simple styling and layout. CSS was created based on these tags in an attempt to decouple design from document semantics.
-
-    JavaScript and the DOM were developed in a similarly haphazard fashion -- the language itself was famously spec'd out in 10 days -- and even in the mid 90s after it had only been out for a couple of months it was already too late to introduce breaking changes, even to fix counterintuitive and poorly implemented features. 
-
-    Further complicating the situation was wildly varying support for features. Web standards are unevenly supported to this day, but the variations between browsers in the early 2000s was tremendous. We complain about IE8 today but microsoft sat on IE6 for _five years_.   
-
-    What we now recognize as best practices were developed in order to protect us from these irregularities. Anyone who was making pages in the font tag days remembers what a pain it was to change every page when you wanted to update your design; having a separate stylesheet made updating a design a much more reasonable process. 
-
-    - best practices arise to make sense of this
-        + progressive enhancement
-        + restricted subsets 
-            * browser-safe pallette
-            * javascript: the good parts
-            * SMACSS, OOCSS
-        + separation of semantics and style (CSS Zen Garden)
-        + increase accessibility/usabilty, decrease complexity
+This is what i've got so far -- I have my plate here and i can drag these ingredients around and compose my plate. On the left is the list of ingredients and I have my pallete -- im calling it the pantry -- at the bottom. click to add an ingredient onto the plate.
 
 # React
 
-The metaphor that the web is moving towards is components, and the implementation of components that I've been using is React. React is a library made by facebook that patches over the weirdness and rigidity of the DOM with a virtual DOM. It happens to be very fast but that's its least interesting feature from my perspective; I use it because it allows me to reason about my code in a way that makes sense to me.
+I built this with React, a library made by facebook that patches over the weirdness and rigidity of the DOM with a virtual DOM. It happens to be very fast but that's its least interesting feature from my perspective; I use it because it allows me to reason about my code in a way that makes sense to me. Let's take a look at the code.
 
-(time series)
+# code
+
+Now this is the part in every talk about React where the presenter gets super defensive about "best practices". I'm gonna tell you what this does and you can tell me I'm ruining the internet in the Q & A.
+
+## Egg.jsx
+
+Starting at the lowest level: This is an egg. It renders into SVG. React components have a couple of lifecycle methods that run when the component is first loaded or between updates; here I'm using componentWillMount to generate an irregular border for the egg. This runs once for every egg, so every egg has a unique border but it doesn't change once its made. 
+
+In the render method, I define the template for the egg, and I handle the data that's going into the component, via the state and properties. For this component the only property that matters right now is "isHover" -- when isHover is true, the yolk gets a blue outline. The styles are set inline.
+
+## Pantry.jsx
+
+I use the same Egg component both in the pantry and on the plate. In the pantry, I make a button for every ingredient i have; when I click a button, it's handled by this onClick method which adds a new ingredient to the global state, which triggers a redraw in all the components that consume the global state.  
+
+## IngredientSVG.jsx
+
+When I'm rendering the plate and its contents, I loop over the ingredients in the global state and wrap them in a component that handles all of the generic stuff like position and dragging. The component that handles the list on the side is very similar and even shares code via the IngredientManager mixin, which handles the selection and moving stuff. 
+
+This feels a lot like 2-way binding in Angular but its actually a lot simpler -- there's no dirty checking, no digest cycles, no event broadcast, no angular scope. When I move this egg it re-renders pretty much everything, unless I specifically tell it otherwise. 
+
 
 # cats and dogs, living together
-
-Take this graph, which tracks the quality of my recipes over time. If you're an experienced developer this probably looks like something I've copied from w3schools. It's almost like I'm purposely ignoring every best practice for web development -- everything is mixed together! Inline styles! There's no separation of concerns!
 
     Well hold up. Everything in this file is related to this component. If I was going to have the template and the css and the javascript separated, that just means I'd have three files supporting this component instead of one. Best practices dictate that templates should have as little logic as possible in the template; the data should be "massaged" into a form that can be consumed by the template. This is part of why people hate on PHP so hard -- logic-full templates are a first-class construct in the language. But this is conflating separation of technologies with separation of concerns -- **TKTKTK** web components
 
@@ -104,6 +87,37 @@ But if I have inline styles, that goes away. I can still share styles between co
     - inline d3 in react is neither specific to d3 nor react
         + use d3 with angular / handlebars
         + use react with other math / formatting libraries
+
+# what is an app
+So I'm building a web app. Why a web app? What makes this an app and not just a site? In the traditional model of the web, pages are documents with links and an outline structure, with the content and structure in html, the design in css, and "extra stuff" in javascript, and you access the document with a browser. The web app model adds a layer of indirection to this, so instead of the browser being a document viewer, you make custom documents and a custom viewer and the browser becomes a ... document viewer viewer.
+
+    Its easy to forget this but the book is a form of technology; it is both a document and a machine for reading the document. The content _can_ often be separated from its layout, its style, the size of the page, the quality of the paper, the book's pagination -- but all of those are features of the book-as-artifact. 
+
+This is actually a good thing. 
+
+HTML and CSS are pretty good at representing a particular kind of document, but they do not encompass all documents. an article is not a photo is not a calendar is not a presentation is not a tweet, and they have varying abilities to map to semantic HTML, but they are all documents. The "document" is an abstract concept that can have infinite representations, but we need to shoehorn it into this one format based on a series of bad decisions made 20 years ago. 
+
+    A note on best practices.
+
+    so i want to have interactive recipes and reports tracking which ones are successful. I've gotta represent these in html somehow, but before I get there I must consider what html is _for_.
+
+    html was originally created in the early 90s as a way to format and link technical documents. for the first years of its life new features weren't so much designed as grown; netscape and microsoft introduced new tags and attributes to allow simple styling and layout. CSS was created based on these tags in an attempt to decouple design from document semantics.
+
+    JavaScript and the DOM were developed in a similarly haphazard fashion -- the language itself was famously spec'd out in 10 days -- and even in the mid 90s after it had only been out for a couple of months it was already too late to introduce breaking changes, even to fix counterintuitive and poorly implemented features. 
+
+    Further complicating the situation was wildly varying support for features. Web standards are unevenly supported to this day, but the variations between browsers in the early 2000s was tremendous. We complain about IE8 today but microsoft sat on IE6 for _five years_.   
+
+    What we now recognize as best practices were developed in order to protect us from these irregularities. Anyone who was making pages in the font tag days remembers what a pain it was to change every page when you wanted to update your design; having a separate stylesheet made updating a design a much more reasonable process. 
+
+    - best practices arise to make sense of this
+        + progressive enhancement
+        + restricted subsets 
+            * browser-safe pallette
+            * javascript: the good parts
+            * SMACSS, OOCSS
+        + separation of semantics and style (CSS Zen Garden)
+        + increase accessibility/usabilty, decrease complexity
+
 
 # What We Learned 
 - the “react way” sounds bad and is contrary to the established standards

@@ -4,6 +4,7 @@ import React        from 'react';
 import GlobalAtom   from 'mixins/GlobalAtom';
 import {colors} from 'views/style';
 
+import PlainButton from "views/PlainButton";
 import IngredientManager from 'mixins/IngredientManager';
 
 var PercentSlider =React.createClass({
@@ -68,9 +69,14 @@ export var IngredientListItem = React.createClass({
             <div style={style} 
                 onMouseEnter={this.onMouseEnter}
                 onMouseLeave={this.onMouseLeave}>
-                <span onClick={this.onSelect}>{item.component.displayName}</span>
-                <PercentSlider value={item.cook} onChange={this.onCook}/>
-                <button onClick={this.onRemove}>remove</button>
+                <span onClick={this.onSelect} style={{
+                    display: "inline-block",
+                    width: 70
+                }}>{item.component.displayName}</span>
+                {/*<PercentSlider value={item.cook} onChange={this.onCook}/>*/}
+                <PlainButton onClick={this.onRemove} style={{
+                    paddingRight: 8
+                }}>&times;</PlainButton>
             </div>
         );
     }
