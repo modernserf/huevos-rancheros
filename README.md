@@ -13,11 +13,7 @@ This is what i've got so far -- I have my plate here and i can drag these ingred
 
 # React
 
-I built this with React, a library made by facebook that patches over the weirdness and rigidity of the DOM with a virtual DOM. It happens to be very fast but that's its least interesting feature from my perspective; I use it because it allows me to reason about my code in a way that makes sense to me. Let's take a look at the code.
-
-# code
-
-Now this is the part in every talk about React where the presenter gets super defensive about "best practices". I'm gonna tell you what this does and you can tell me I'm ruining the internet in the Q & A.
+I built this with React, a library made by facebook __that patches over the weirdness and rigidity of the DOM with a virtual DOM__. It happens to be very fast but that's its least interesting feature from my perspective; I use it because it allows me to reason about my code in a way that makes sense to me. Let's take a look at the code.
 
 ## Egg.jsx
 
@@ -27,9 +23,9 @@ In the render method, I define the template for the egg, and I handle the data t
 
 ## Pantry.jsx
 
-I use the same Egg component both in the pantry and on the plate. Here I've got a list of all my ingredients -- Egg, Tomato, Tortilla, Salsa, and Cheese -- they all have the same interface. 
+I use the same Egg component both in the pantry and on the plate. Here I've got a list of all my ingredients -- Egg, Tomato, Tortilla, Salsa, and Cheese -- they all have the same interface, with the data and isHover properties.
 
- In the pantry, I make a button for every ingredient i have; when I click a button, it's handled by this onClick method which adds a new ingredient to the global state, which triggers a redraw in all the components that consume the global state.  
+ In the pantry, I make a button for every ingredient i have; when I click a button, it's handled by this onClick method which adds a new ingredient to the global state, which triggers a redraw in all the components that consume that global state.  
 
 ## IngredientSVG.jsx
 
@@ -124,7 +120,3 @@ HTML and CSS are pretty good at representing a particular kind of document, but 
     + Elm completely abstracts away the DOM, CSS, JS
     + Web components for inserting non-documents into documents
     + There are tremendous opportunities for  
-
-- the way ive ended up making that dish is kind of unusual
-    + i stack everything and put it in a bowl
-    + full-stack breakfast engineer
