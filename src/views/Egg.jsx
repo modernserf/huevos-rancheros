@@ -48,7 +48,7 @@ var Egg = React.createClass({
         var { data, isHover } = this.props;
         var { eggPath, yoke} = this.state;
 
-        // data = { cook: 0};
+        data = { cook: 1};
 
         var opacity = data ? (data.cook || 0) + 0.5 : 1;
         var borderOpacity = data && data.cook && data.cook > 0.5 ?

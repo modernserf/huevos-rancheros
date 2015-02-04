@@ -18,7 +18,7 @@ var Tortilla = React.createClass({
     },
     render () {
         var {data, isHover} = this.props;
-        var density = data ? data.cook : 0.5;
+        var density = 2;
 
         var maskID = `mask_${data && data.id}`;
 

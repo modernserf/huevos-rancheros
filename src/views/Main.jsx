@@ -3,8 +3,6 @@
 import React from 'react';
 import GlobalAtom from 'mixins/GlobalAtom';
 
-import Navigation from 'views/Navigation';
-
 var Main = React.createClass({
     mixins: [GlobalAtom],
     propTypes: {},
@@ -14,7 +12,6 @@ var Main = React.createClass({
         return (
             <div>
                 <Page />
-                <Navigation />
             </div>
             
         );
