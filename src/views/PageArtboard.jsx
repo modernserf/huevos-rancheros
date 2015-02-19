@@ -13,14 +13,17 @@ const offset = (pair, x) => add(pair, [-x,x]);
 
 const Point = React.createClass({
     render () {
-        var { x, y, onClick, id, pos } = this.props;
+        var { x, y, onClick, id, pos, isGrabbing } = this.props;
 
         const color = pos === 2 ? "red" : "blue";
 
+        const cursor = isGrabbing ? "-webkit-grabbing" : "-webkit-grab";
+
         return <g transform={`translate(${x},${y})`}
+            style={{cursor: cursor}}
             onMouseDown={e => onClick(e,id,pos)}
             onMouseUp={e => onClick(e, null,null)}>
-            <circle r={2} fill={color}/>
+            <circle r={5} fill={color}/>
         </g>;
     }
 });
@@ -102,7 +105,7 @@ const Artboard = React.createClass({
 
         const point = [e.clientX, e.clientY];
 
-        const cmd = ['C', offset(point,-5), offset(point,5),point];
+        const cmd = ['C', offset(point,-20), offset(point,20),point];
 
         data.push(cmd);
 
@@ -120,11 +123,12 @@ const Artboard = React.createClass({
         return flatcat([start].concat(data)) + " Z";
     },
     render () {
-        const { data, isDeleteMode } = this.state;
+        const { data, isDeleteMode, movingID } = this.state;
         const width = 600;
         const height = 400;
 
-        const cursor = isDeleteMode ? "context-menu" : "default";
+        const cursor = isDeleteMode ? "context-menu" :
+            "default";
 
         const container = {
             backgroundColor: "#000",
@@ -150,6 +154,7 @@ const Artboard = React.createClass({
 
                 return (
                     <Point key={pos} x={x} y={y} id={id} pos={pos}
+                        isGrabbing={id === movingID}
                         onClick={this.onClickPoint}/>
                 );
             });
