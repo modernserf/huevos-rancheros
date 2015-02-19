@@ -25,7 +25,7 @@ const Point = React.createClass({
         return <g transform={`translate(${x},${y})`}
             onMouseDown={e => onClick(e,id,pos)}
             onMouseUp={e => onClick(e, null,null)}>
-            <circle r={3} fill={color}/>
+            <circle r={2} fill={color}/>
         </g>;
     }
 });
@@ -44,7 +44,8 @@ const Artboard = React.createClass({
         return {
             data : [],
             movingID: null,
-            movingPos: null
+            movingPos: null,
+            isDeleteMode: false
         };
     },
     onMove (e){
@@ -65,18 +66,41 @@ const Artboard = React.createClass({
         this.forceUpdate();
     },
     onClickPoint (e, id, pos){
-        this.setState({
-            movingID: id,
-            movingPos: pos
-        });
+        const { data, isDeleteMode } = this.state;
+
+        if (isDeleteMode){
+            let nextData = data.slice(0, id)
+                .concat(data.slice(id + 1));
+
+            this.setState({
+                data: nextData
+            });
+
+        } else {
+            this.setState({
+                movingID: id,
+                movingPos: pos
+            });   
+        }
     },
-    onCancel (e){
+    dispatchKey (e){
+        if (e.shiftKey){
+            this.setState({
+                isDeleteMode: true
+            });
+        }
+
         if (e.keyCode === 27){
             this.setState({
                 movingID: null,
                 movingPos: null
             });
         }
+    },
+    onKeyUp (e){
+        this.setState({
+            isDeleteMode: false
+        });
     },
     addPoint(e){
         let { data } = this.state;
@@ -101,13 +125,16 @@ const Artboard = React.createClass({
         return flatcat([start].concat(data)) + " Z";
     },
     render () {
-        const { data } = this.state;
+        const { data, isDeleteMode } = this.state;
         const width = 600;
         const height = 400;
 
+        const cursor = isDeleteMode ? "context-menu" : "default";
+
         const container = {
             backgroundColor: "#000",
-            height: 1000
+            height: 1000,
+            cursor: cursor
         };
 
         const artboard = {
@@ -148,13 +175,23 @@ const Artboard = React.createClass({
             );
         });
 
+        const scale = 0.98;
+
+        const innerPath = `matrix(${scale},0,0,${scale},2,2)`;
+
         return (
             <div tabIndex={1} style={container} onMouseMove={this.onMove}
-                onKeyDown={this.onCancel}>
+                onKeyDown={this.dispatchKey}
+                onKeyUp={this.onKeyUp}>
                 <svg style={artboard}>
                     <rect width={width} height={height} fill="white"
                         onClick={this.addPoint}/>
-                    <path d={path} fill="white" stroke="black"/>
+                    <path d={path} fill="transparent" stroke="black"/>
+
+                    <g onClick={this.addPoint} transform={innerPath}>
+                        <path d={path} fill="transparent" stroke="none"/>
+                    </g>
+                    
                     <g>{commands}</g>
                 </svg>
             </div>
