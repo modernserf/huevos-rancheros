@@ -174,7 +174,7 @@ const Artboard = React.createClass({
         const innerPath = `matrix(${scale},0,0,${scale},2,2)`;
 
         return (
-            <div tabIndex={1} style={container} onMouseMove={this.onMove}>
+            <div style={container} onMouseMove={this.onMove}>
                 <svg style={artboard}>
                     <circle fill={colors.gold} cx={width/2} cy={height/2} r={30}/>
 
