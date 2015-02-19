@@ -1,20 +1,15 @@
 "use strict";
 
 import React from 'react';
-import GlobalAtom   from 'mixins/GlobalAtom';
+import {colors} from 'views/style'; 
 
-const flatcat = (arr) => {
-    if (arr instanceof Array){
-        return arr.map(flatcat).join(' ');
-    } else {
-        return String(arr);
-    }
-};
+const flatcat = (arr) => arr instanceof Array ?
+    arr.map(flatcat).join(' ') :
+    String(arr);
 
 const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
-
-const offset = (pair, x) => add(pair, [x,x]);
+const offset = (pair, x) => add(pair, [-x,x]);
 
 const Point = React.createClass({
     render () {
@@ -47,6 +42,25 @@ const Artboard = React.createClass({
             movingPos: null,
             isDeleteMode: false
         };
+    },
+    componentWillMount (){
+        window.addEventListener('keydown', (e) =>{
+            if (e.keyCode === 27){
+                this.setState({
+                    movingID: null,
+                    movingPos: null
+                });
+            }
+
+            this.setState({
+                isDeleteMode: e.shiftKey
+            });
+        });
+        window.addEventListener('keyup', (e) => {
+            this.setState({
+                isDeleteMode: false
+            });
+        });
     },
     onMove (e){
         let { data, movingID, movingPos } = this.state;
@@ -82,25 +96,6 @@ const Artboard = React.createClass({
                 movingPos: pos
             });   
         }
-    },
-    dispatchKey (e){
-        if (e.shiftKey){
-            this.setState({
-                isDeleteMode: true
-            });
-        }
-
-        if (e.keyCode === 27){
-            this.setState({
-                movingID: null,
-                movingPos: null
-            });
-        }
-    },
-    onKeyUp (e){
-        this.setState({
-            isDeleteMode: false
-        });
     },
     addPoint(e){
         let { data } = this.state;
@@ -154,7 +149,7 @@ const Artboard = React.createClass({
                 const [x,y] = p;
 
                 return (
-                    <Point x={x} y={y} id={id} pos={pos}
+                    <Point key={pos} x={x} y={y} id={id} pos={pos}
                         onClick={this.onClickPoint}/>
                 );
             });
@@ -167,7 +162,7 @@ const Artboard = React.createClass({
                 null;
 
             return (
-                <g>
+                <g key={id}>
                     <g>{lines}</g>
                     <g>{pointTags}</g>
                 </g>
@@ -176,15 +171,14 @@ const Artboard = React.createClass({
         });
 
         const scale = 0.98;
-
         const innerPath = `matrix(${scale},0,0,${scale},2,2)`;
 
         return (
-            <div tabIndex={1} style={container} onMouseMove={this.onMove}
-                onKeyDown={this.dispatchKey}
-                onKeyUp={this.onKeyUp}>
+            <div tabIndex={1} style={container} onMouseMove={this.onMove}>
                 <svg style={artboard}>
-                    <rect width={width} height={height} fill="white"
+                    <circle fill={colors.gold} cx={width/2} cy={height/2} r={30}/>
+
+                    <rect width={width} height={height} fill="transparent"
                         onClick={this.addPoint}/>
                     <path d={path} fill="transparent" stroke="black"/>
 
