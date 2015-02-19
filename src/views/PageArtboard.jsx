@@ -11,47 +11,94 @@ const flatcat = (arr) => {
     }
 };
 
+const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+
+const offset = (pair, x) => add(pair, [x,x]);
+
 const Point = React.createClass({
     render () {
         var { x, y, onClick, id, pos } = this.props;
 
+        const color = pos === 2 ? "red" : "blue";
+
         return <g transform={`translate(${x},${y})`}
-            onMouseDown={e => onClick(id,pos)}
-            onMouseUp={e => onClick(null,null)}>
-            <circle r={3} fill="red"/>
+            onMouseDown={e => onClick(e,id,pos)}
+            onMouseUp={e => onClick(e, null,null)}>
+            <circle r={3} fill={color}/>
         </g>;
+    }
+});
+
+const Line = React.createClass({
+    render () {
+        const { s, e } = this.props;
+
+        return <line x1={s[0]} y1={s[1]} x2={e[0]} y2={e[1]}
+            strokeDasharray="5,5" stroke="gray"/>;
     }
 });
 
 const Artboard = React.createClass({
     getInitialState (){
         return {
-            data : [
-                ['M', [10,10]],
-                ['C', [0,0],[20,20],[10,30]],
-                ['C', [5,5],[25,25],[30,30]],
-                ['C', [0,5],[35,35],[30,10]],
-            ],
+            data : [],
             movingID: null,
             movingPos: null
         };
     },
     onMove (e){
-        const { data, movingID, movingPos } = this.state;
+        let { data, movingID, movingPos } = this.state;
 
         if (movingID === null){ return; }
 
         const nextPos = [e.clientX, e.clientY];
 
+        if (movingPos === 2){ 
+            let diff = sub(nextPos, data[movingID][3]);
+            data[movingID][1] = add(diff, data[movingID][1]);
+            data[movingID][2] = add(diff, data[movingID][2]);
+        }
+
         data[movingID][movingPos + 1] = nextPos;
 
         this.forceUpdate();
     },
-    onClick (id, pos){
+    onClickPoint (e, id, pos){
         this.setState({
             movingID: id,
             movingPos: pos
         });
+    },
+    onCancel (e){
+        if (e.keyCode === 27){
+            this.setState({
+                movingID: null,
+                movingPos: null
+            });
+        }
+    },
+    addPoint(e){
+        let { data } = this.state;
+
+        const point = [e.clientX, e.clientY];
+
+        const cmd = ['C', offset(point,-5), offset(point,5),point];
+
+        data.push(cmd);
+
+        this.forceUpdate();
+    },
+    getPath (){
+        const { data } = this.state;
+
+        if (data.length < 2){ return ""; }
+
+        const last = data[data.length - 1];
+
+        const start = ['M', last[3]];
+
+        return flatcat([start].concat(data)) + " Z";
     },
     render () {
         const { data } = this.state;
@@ -70,7 +117,7 @@ const Artboard = React.createClass({
             display: "block"
         };
 
-        const path = flatcat(data) + " Z";
+        const path = this.getPath();
 
         const commands = data.map((x,id) => {
 
@@ -81,18 +128,32 @@ const Artboard = React.createClass({
 
                 return (
                     <Point x={x} y={y} id={id} pos={pos}
-                        onClick={this.onClick}/>
+                        onClick={this.onClickPoint}/>
                 );
             });
 
+            const lines = points.length > 1 ?
+                <g>
+                    <Line s={points[0]} e={points[2]}/>
+                    <Line s={points[1]} e={points[2]}/>
+                </g> : 
+                null;
+
             return (
-                <g>{pointTags}</g>
+                <g>
+                    <g>{lines}</g>
+                    <g>{pointTags}</g>
+                </g>
+                
             );
         });
 
         return (
-            <div style={container} onMouseMove={this.onMove}>
+            <div tabIndex={1} style={container} onMouseMove={this.onMove}
+                onKeyDown={this.onCancel}>
                 <svg style={artboard}>
+                    <rect width={width} height={height} fill="white"
+                        onClick={this.addPoint}/>
                     <path d={path} fill="white" stroke="black"/>
                     <g>{commands}</g>
                 </svg>
