@@ -11,16 +11,17 @@ const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
 const offset = (pair, x) => add(pair, [-x,x]);
 
+// const cursor = isGrabbing ? "-webkit-grabbing" : "-webkit-grab";
+// style={{cursor: cursor}}
+
+
 const Point = React.createClass({
     render () {
-        var { x, y, onClick, id, pos, isGrabbing } = this.props;
+        var { x, y, onClick, id, pos } = this.props;
 
         const color = pos === 2 ? "red" : "blue";
 
-        const cursor = isGrabbing ? "-webkit-grabbing" : "-webkit-grab";
-
         return <g transform={`translate(${x},${y})`}
-            style={{cursor: cursor}}
             onMouseDown={e => onClick(e,id,pos)}
             onMouseUp={e => onClick(e, null,null)}>
             <circle r={5} fill={color}/>
@@ -36,6 +37,76 @@ const Line = React.createClass({
             strokeDasharray="5,5" stroke="gray"/>;
     }
 });
+
+const Path = React.createClass({
+    render (){
+        const { data, style } = this.props;
+
+        if (data.length < 2){ return null; }
+
+        const last = data[data.length - 1];
+
+        const start = ['M', last[3]];
+
+        const d = flatcat([start].concat(data)) + " Z";
+
+        return (
+            <path d={d} style={style}/>
+        );
+    }
+});
+
+const EditPath = React.createClass({
+    render () {
+        const { data, onClick } = this.props;
+
+        const commands = data.map((x,id) => {
+
+            const [type, ...points] = x;
+
+            const pointTags = points.map((p,pos) => {
+                const [x,y] = p;
+
+                return (
+                    <Point key={pos} x={x} y={y} id={id} pos={pos}
+                        onClick={onClick.point}/>
+                );
+            });
+
+            const lines = points.length > 1 ?
+                <g>
+                    <Line s={points[0]} e={points[2]}/>
+                    <Line s={points[1]} e={points[2]}/>
+                </g> : 
+                null;
+
+            return (
+                <g key={id}>
+                    <g>{lines}</g>
+                    <g>{pointTags}</g>
+                </g>
+                
+            );
+        });
+
+        const scale = 0.98;
+        const innerPath = `matrix(${scale},0,0,${scale},2,2)`;
+
+        return (
+            <g>
+                <Path data={data}  style={{fill: "transparent", stroke: "black"}}/>
+
+                <g onClick={onClick.default} transform={innerPath}>
+                    <Path data={data}  style={{fill: "transparent", stroke: "none"}}/>
+                </g>
+                
+                <g>{commands}</g>
+            </g>
+        );
+    }
+});
+
+
 
 const Artboard = React.createClass({
     getInitialState (){
@@ -111,17 +182,7 @@ const Artboard = React.createClass({
 
         this.forceUpdate();
     },
-    getPath (){
-        const { data } = this.state;
 
-        if (data.length < 2){ return ""; }
-
-        const last = data[data.length - 1];
-
-        const start = ['M', last[3]];
-
-        return flatcat([start].concat(data)) + " Z";
-    },
     render () {
         const { data, isDeleteMode, movingID } = this.state;
         const width = 600;
@@ -143,55 +204,20 @@ const Artboard = React.createClass({
             display: "block"
         };
 
-        const path = this.getPath();
-
-        const commands = data.map((x,id) => {
-
-            const [type, ...points] = x;
-
-            const pointTags = points.map((p,pos) => {
-                const [x,y] = p;
-
-                return (
-                    <Point key={pos} x={x} y={y} id={id} pos={pos}
-                        isGrabbing={id === movingID}
-                        onClick={this.onClickPoint}/>
-                );
-            });
-
-            const lines = points.length > 1 ?
-                <g>
-                    <Line s={points[0]} e={points[2]}/>
-                    <Line s={points[1]} e={points[2]}/>
-                </g> : 
-                null;
-
-            return (
-                <g key={id}>
-                    <g>{lines}</g>
-                    <g>{pointTags}</g>
-                </g>
-                
-            );
-        });
-
-        const scale = 0.98;
-        const innerPath = `matrix(${scale},0,0,${scale},2,2)`;
+        const onClick = {
+            point: (e, id, pos) => this.onClickPoint(e,id, pos),
+            default: (e) => this.addPoint
+        };
 
         return (
             <div style={container} onMouseMove={this.onMove}>
                 <svg style={artboard}>
-                    <circle fill={colors.gold} cx={width/2} cy={height/2} r={30}/>
-
                     <rect width={width} height={height} fill="transparent"
                         onClick={this.addPoint}/>
-                    <path d={path} fill="transparent" stroke="black"/>
 
-                    <g onClick={this.addPoint} transform={innerPath}>
-                        <path d={path} fill="transparent" stroke="none"/>
-                    </g>
-                    
-                    <g>{commands}</g>
+                    <circle fill={colors.gold} cx={width/2} cy={height/2} r={30}/>
+
+                    <EditPath data={data} onClick={onClick}/>
                 </svg>
             </div>
         );
