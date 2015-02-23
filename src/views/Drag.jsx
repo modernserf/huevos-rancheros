@@ -104,14 +104,26 @@ export default function (E) {
                 );
             });
 
+            const filler = E === "g" && (
+                <rect width={width} height={height} fill="transparent" />
+            );
+
+            const style = E !== "g" && {
+                width: width,
+                height: height,
+                position: "absolute"
+            };
+
+
             return (
-                <E  onMouseDown={dragNewStart}
+                <E  style={style || {}}
+                    onMouseDown={dragNewStart}
                     onMouseMove={e => dragState.onDrag(e)}
                     onMouseUp={e => {
                         dragState.onDragEnd(e.clientX - x, e.clientY - y, e);
                         this.forceUpdate();
                     }}>
-                    <rect width={width} height={height} fill="transparent" />
+                    {filler}
                     {children}
                 </E>
             );
