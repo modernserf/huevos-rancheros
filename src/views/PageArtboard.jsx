@@ -4,6 +4,10 @@ import React from 'react';
 import EventStream from 'types/EventStream';
 import Drag from 'views/Drag';
 
+import MoveMode from 'views/MoveMode';
+import InactiveMode from 'views/InactiveMode';
+import Circle from 'views/Circle';
+
 import {colors} from 'views/style'; 
 
 const _t = React.PropTypes;
@@ -14,6 +18,12 @@ const flatcat = (arr) => arr instanceof Array ?
 
 const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+
+const polarR = (a, b) => {
+    const diff = sub(a, b);
+    return Math.sqrt((diff[0] * diff[0]) + (diff[1] * diff[1]));
+};
+
 const offset = (pair, x) => add(pair, [-x,x]);
 
 // const cursor = isGrabbing ? "-webkit-grabbing" : "-webkit-grab";
@@ -21,21 +31,19 @@ const offset = (pair, x) => add(pair, [-x,x]);
 
 const { DragState, DragArea, Draggable } = Drag('g');
 
-const Point = React.createClass({
+const ShowBezier = React.createClass({
     render () {
-        var { x, y, onClick, id, pos } = this.props;
+        const { x, y } = this.props;
 
-        const color = pos === 2 ? "red" : "blue";
-
-        return <g transform={`translate(${x},${y})`}
-            onMouseDown={e => onClick(e,id,pos)}
-            onMouseUp={e => onClick(e, null,null)}>
-            <circle r={5} fill={color}/>
-        </g>;
+        return (
+            <g transform={`translate(${x||0},${y||0})`}>
+                <path {...this.props}/>
+            </g>
+        );
     }
 });
 
-const Line = React.createClass({
+const DottedLine = React.createClass({
     render () {
         const { s, e } = this.props;
 
@@ -44,93 +52,70 @@ const Line = React.createClass({
     }
 });
 
-const Path = React.createClass({
-    render (){
-        const { data, style } = this.props;
-
-        if (data.length < 2){ return null; }
-
+const AddBezier = React.createClass({
+    getInitialState (){
+        return {
+            pathData: [],
+            isCreating: false,
+            dragState: DragState.create()
+        };
+    },
+    parsePathData (data){
         const last = data[data.length - 1];
-
         const start = ['M', last[3]];
-
         const d = flatcat([start].concat(data)) + " Z";
-
-        return (
-            <path d={d} style={style}/>
-        );
-    }
-});
-
-
-
-const EditPath = React.createClass({
-    onMove (e){
-        let { data, movingID, movingPos } = this.state;
-
-        if (movingID === null){ return; }
-
-        const nextPos = [e.clientX, e.clientY];
-
-        if (movingPos === 2){ 
-            let diff = sub(nextPos, data[movingID][3]);
-            data[movingID][1] = add(diff, data[movingID][1]);
-            data[movingID][2] = add(diff, data[movingID][2]);
-        }
-
-        data[movingID][movingPos + 1] = nextPos;
-
-        this.forceUpdate();
+        return d;
     },
-    onClickPoint (e, id, pos){
-        const { data, isDeleteMode } = this.state;
-
-        if (isDeleteMode){
-            let nextData = data.slice(0, id)
-                .concat(data.slice(id + 1));
-
-            this.setState({
-                data: nextData
-            });
-
-        } else {
-            this.setState({
-                movingID: id,
-                movingPos: pos
-            });   
-        }
-    },
-    addPoint(e){
-        let { data } = this.state;
-
-        const point = [e.clientX, e.clientY];
+    addPoint (x,y,e) {
+        console.log('addPoint');
+        const point = [x,y];
 
         const cmd = ['C', offset(point,-20), offset(point,20),point];
+        const pathData = this.state.pathData.concat([cmd]);
 
-        data.push(cmd);
-
+        this.setState({
+            isCreating: true,
+            pathData: pathData
+        });
+    },
+    dragPoint (p, x,y,e) {
+        console.log('dragPoint');
+        p[0] = x;
+        p[1] = y;
         this.forceUpdate();
     },
-    render () {
-        const { data, onClick } = this.props;
+    render (){
+        const { data, width, height, onAdd } = this.props;
+        const { isCreating, dragState, pathData } = this.state;
 
-        const commands = data.map((x,id) => {
+        const style = { stroke: "black", fill: "transparent" };
 
+
+        const preview = isCreating && (
+            <ShowBezier d={this.parsePathData(pathData)} style={style}/>
+        );
+
+        const commands = pathData.map((x,id) => {
             const [type, ...points] = x;
 
             const pointTags = points.map((p,pos) => {
                 const [x,y] = p;
 
+                const color = pos === 2 ? "red" : "blue";
+
                 return (
-                    <Point key={pos} x={x} y={y} id={id} pos={pos}
-                        onClick={onClick.point}/>
+                    <Draggable key={pos} dragState={dragState}
+                        x={x} y={y}
+                        onDrag={(x,y,e)=> this.dragPoint(p, x,y,e)}>
+                        <circle r={5} fill={color}/>
+                    </Draggable>
                 );
             });
 
             const lines = points.length > 1 ?
                 <g>
-                    <Line s={points[0]} e={points[2]}/>
-                    <Line s={points[1]} e={points[2]}/>
+                    <DottedLine s={points[0]} e={points[2]}/>
+                    <DottedLine s={points[1]} e={points[2]}/>
                 </g> : 
                 null;
 
@@ -139,122 +124,49 @@ const EditPath = React.createClass({
                     <g>{lines}</g>
                     <g>{pointTags}</g>
                 </g>
-                
             );
         });
-
-        const scale = 0.98;
-        const innerPath = `matrix(${scale},0,0,${scale},2,2)`;
-
-        return (
-            <g>
-                <Path data={data}  style={{fill: "transparent", stroke: "black"}}/>
-
-                <g onClick={onClick.default} transform={innerPath}>
-                    <Path data={data}  style={{fill: "transparent", stroke: "none"}}/>
-                </g>
-                
-                <g>{commands}</g>
-            </g>
-        );
-    }
-});
-
-const Circle = React.createClass({
-    render () {
-        const { x, y } = this.props;
-
-        return (
-            <g transform={`translate(${x},${y})`}>
-                <circle {...this.props}/>
-            </g>
-        );
-    }
-});
-
-
-const InactiveMode = React.createClass({
-    render () {
-        const { data , width, height } = this.props;
-
-        const items = data.map((it,index) => {
-            const Element = it.element;
-
-            return (
-                <Element key={index} {...it.props}/>
-            );
-        });
-
-        return (
-            <g>
-                {items}
-            </g>
-        );
-    }
-});
-
-const MoveMode = React.createClass({
-    getInitialState (){
-        const dragState = DragState.create();
-
-        return {
-            dragState: dragState
-        };
-    },
-    render () {
-        const { data, onChange, width, height } = this.props;
-        const { dragState } = this.state;
-
-        const items = data.map((it,index) => {
-            const Element = it.element;
-
-            return (
-                <Draggable key={index} dragState={dragState}
-                    onDrag={(x,y) => { onChange(it,{ x, y }); }}>
-                    <Element {...it.props}/>
-                </Draggable>
-            );
-        });
-
-        return (
-            <DragArea dragState={dragState} width={width} height={height}>
-                {items}
-            </DragArea>
-        );
-    }
-});
-
-// TODO: use DragArea with click
-const AddMode = React.createClass({
-    render () {
-        const { data, onChange, width, height, onAdd } = this.props;
 
         return (
             <g>
                 <InactiveMode width={width} height={height} data={data}/>
-                <rect width={width} height={height} onClick={onAdd} fill="transparent"/>
+                {preview}
+                <DragArea dragState={dragState} 
+                    width={width} height={height}>
+                    <rect width={width} height={height} fill="transparent"
+                        onClick={e => this.addPoint(e.clientX, e.clientY,e)}/>
+                    {commands}
+                </DragArea>
             </g>
         );
     }
 });
+
+const Bezier = {
+    show: ShowBezier,
+    add: AddBezier
+};
 
 const ModeSelector = React.createClass({
     render () {
         const { onChange } = this.props;
         const modes = [
             ['Move', MoveMode],
-            ['Add', AddMode]
+            ['Circle', Circle.add],
+            ['Path',Bezier.add],
         ];
 
         const style = {
             position: "fixed",
-            bottom: 0,
+            top: 0,
             left: 0,
         };
 
         return (
             <div style={style}>
-                {modes.map(m => <button key={m[0]} onClick={e => onChange(m[1])}>
+                {modes.map(m => <button key={m[0]} 
+                    style={{display: "block"}}
+                    onClick={e => onChange(m[1])}>
                     {m[0]}
                 </button>)}
             </div>
@@ -302,23 +214,10 @@ const Artboard = React.createClass({
             }
         };
 
-        const onAdd = (e) => {
-            const newElement = {
-                element: Circle, props: {
-                    fill: "blue",
-                    r: 30,
-                    x: e.clientX,
-                    y: e.clientY
-                }
-            };
+        const onAdd = (newElement) => {
             data.push(newElement);
             this.forceUpdate();
         };
-
-        // const onClick = {
-        //     point: (e, id, pos) => this.onClickPoint(e,id, pos),
-        //     default: (e) => this.addPoint
-        // };
 
         return (
             <div style={container}>
@@ -326,10 +225,6 @@ const Artboard = React.createClass({
                 <svg style={artboard}>
                     <Mode width={width} height={height} data={data} 
                         onChange={onChange} onAdd={onAdd}/>
-                        {/*<rect width={width} height={height} fill="transparent"
-                            onClick={this.addPoint}/>*/}
-
-                        {/*<EditPath data={data} onClick={onClick}/>*/}                    
                 </svg>
             </div>
         );

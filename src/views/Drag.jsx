@@ -12,26 +12,30 @@ class DragState {
         this.stream = it.stream;
     }
 
-    onDragStart (item) {
+    onDragStart (item, x,y,e) {
+        if (!item){ return; }
+
         this.draggedItem = item;
         if (this.draggedItem.onDragStart){
-            this.draggedItem.onDragStart();            
+            this.draggedItem.onDragStart(x,y,e);            
         }
 
         this.update();
     }
 
-    onDrag (x, y) {
-        if (this.draggedItem) {
-            this.draggedItem.onDrag(x, y);
+    onDrag (x, y, e) {
+        if (this.draggedItem && this.draggedItem.onDrag) {
+            this.draggedItem.onDrag(x, y, e);
         }
 
         this.update();
     } 
 
-    onDragEnd () {
+    onDragEnd (x, y, e) {
         if (this.draggedItem && this.draggedItem.onDragEnd) {
             this.draggedItem.onDragEnd();
+        } else if (this.draggedItem && this.draggedItem.onClick) {
+            this.draggedItem.onClick(x, y, e);
         }
 
         this.draggedItem = null;
@@ -83,12 +87,17 @@ export default function (E) {
             window.addEventListener('resize', e => { this.getOffset(); });
         },
         render () {
-            const { children, dragState, width, height } = this.props;
-            const { x, y } = this.state;
+            const { children, dragState, width, height, dragNew } = this.props;
+            let { x, y } = this.state;
 
             return (
-                <E  onMouseMove={e => dragState.onDrag(e.clientX - x, e.clientY - y)}
-                    onMouseUp={e => dragState.onDragEnd() && this.forceUpdate()}>
+                <E  onMouseDown={e => dragState.onDragStart(dragNew,
+                        e.clientX - x, e.clientY - y, e)}
+                    onMouseMove={e => dragState.onDrag(e.clientX - x, e.clientY - y, e)}
+                    onMouseUp={e => {
+                        dragState.onDragEnd(e.clientX - x, e.clientY - y, e);
+                        this.forceUpdate();
+                    }}>
                     <rect width={width} height={height} fill="transparent" />
                     {children}
                 </E>
@@ -113,10 +122,10 @@ export default function (E) {
         },
         getDefaultActions () {
             return {
-                onDragStart: () => {
+                onDragStart: (x,y,e) => {
                     this.setState({isDragging: true});
                 },
-                onDragEnd: () => {
+                onDragEnd: (x,y,e) => {
                     this.setState({isDragging: false});
                 }                
             };
@@ -137,7 +146,7 @@ export default function (E) {
 
             return (
                 <E  transform={transform}
-                    onMouseDown={e => dragState.onDragStart(props)}
+                    onMouseDown={e => dragState.onDragStart(props, null, null, e)}
                     style={{cursor: cursor}}>
                     {children}
                 </E>
