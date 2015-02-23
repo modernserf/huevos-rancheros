@@ -7,3 +7,6 @@ export const polarR = (a, b) => {
     const diff = sub(a, b);
     return Math.sqrt((diff[0] * diff[0]) + (diff[1] * diff[1]));
 };
+
+export const offset = (pair, x) => add(pair, [-x,x]);
+
