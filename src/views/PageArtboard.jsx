@@ -79,6 +79,12 @@ const AddBezier = React.createClass({
             pathData: pathData
         });
     },
+    deletePoint (cmd) {
+        const { pathData } = this.state;
+        this.setState({
+            pathData: pathData.filter(c => c !== cmd)
+        });
+    },
     dragPoint (params) {
         const { isAnchor, id, pos, x, y } = params;
         const { pathData } = this.state;
@@ -108,8 +114,8 @@ const AddBezier = React.createClass({
             <ShowBezier d={path} style={style}/>
         );
 
-        const commands = pathData.map((x,id) => {
-            const [type, ...points] = x;
+        const commands = pathData.map((cmd,id) => {
+            const [type, ...points] = cmd;
 
             const pointTags = points.map((p,pos) => {
                 const [x,y] = p;
@@ -119,12 +125,17 @@ const AddBezier = React.createClass({
                 return (
                     <Draggable key={pos} dragState={dragState}
                         x={x} y={y}
-                        onDrag={(x,y,e)=> this.dragPoint({
+                        onDragStart={(_x,_y,e)=> {
+                            if (e.shiftKey){
+                                this.deletePoint(cmd);
+                            }
+                        }}
+                        onDrag={(_x,_y,e)=> this.dragPoint({
                             isAnchor: pos === 2,
                             id: id,
                             pos: pos,
-                            x: x,
-                            y: y,
+                            x: _x,
+                            y: _y,
                             event: e
                         })}>
                         <circle r={5} fill={color}/>
