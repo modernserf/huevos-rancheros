@@ -64,7 +64,7 @@ const AddCircle = React.createClass({
         return (
             <g>
                 <InactiveMode width={width} height={height} data={data}/>
-                
+
                 <DragArea dragState={dragState} dragNew={dragNew}
                     width={width} height={height}>
                     {preview}

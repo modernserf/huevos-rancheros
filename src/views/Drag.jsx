@@ -12,20 +12,27 @@ class DragState {
         this.stream = it.stream;
     }
 
-    onDragStart (item, x,y,e) {
+    onDragStart (item, e) {
         if (!item){ return; }
 
         this.draggedItem = item;
+        item._x = item.x - e.clientX;
+        item._y = item.y - e.clientY;
         if (this.draggedItem.onDragStart){
-            this.draggedItem.onDragStart(x,y,e);
+            this.draggedItem.onDragStart(item.x,item.y,e);
         }
 
         this.update();
     }
 
-    onDrag (x, y, e) {
+    onDrag (e) {
+
         if (this.draggedItem && this.draggedItem.onDrag) {
-            this.draggedItem.onDrag(x, y, e);
+            const it = this.draggedItem;
+            this.draggedItem.onDrag(
+                e.clientX + it._x,
+                e.clientY + it._y,
+                e);
         }
 
         this.update();
@@ -88,11 +95,18 @@ export default function (E) {
             const { children, dragState, width, height, dragNew } = this.props;
             let { x, y } = this.state;
 
+            const dragNewStart = dragNew && (e => {
+                dragState.onDragStart(
+                    Object.assign({
+                        x : e.clientX - x, y: e.clientY - y
+                    }, dragNew),
+                    e
+                );
+            });
+
             return (
-                <E  onMouseDown={e => dragState.onDragStart(dragNew,
-                        e.clientX - x, e.clientY - y, e)}
-                    onMouseMove={e => dragState.onDrag(
-                        e.clientX - x, e.clientY - y, e)}
+                <E  onMouseDown={dragNewStart}
+                    onMouseMove={e => dragState.onDrag(e)}
                     onMouseUp={e => {
                         dragState.onDragEnd(e.clientX - x, e.clientY - y, e);
                         this.forceUpdate();
@@ -137,7 +151,8 @@ export default function (E) {
         render (){
             const { x, y, children, dragState } = this.props;
 
-            const cursor = this.state.isDragging ? "-webkit-grabbing" : "-webkit-grab";
+            const cursor = this.state.isDragging ?
+                "-webkit-grabbing" : "-webkit-grab";
 
             const transform = `translate(${x},${y})`;
 
@@ -145,7 +160,7 @@ export default function (E) {
 
             return (
                 <E  transform={transform}
-                    onMouseDown={e => dragState.onDragStart(props, null, null, e)}
+                    onMouseDown={e => dragState.onDragStart(props, e)}
                     style={{cursor: cursor}}>
                     {children}
                 </E>
