@@ -74,10 +74,9 @@ const AddBezier = React.createClass({
         this.forceUpdate();
     },
     render (){
-        const { data, width, height, onAdd } = this.props;
+        const { data, width, height, onAdd, style } = this.props;
         const { isCreating, dragState, pathData } = this.state;
 
-        const style = { stroke: "black", fill: "transparent" };
         const path = this.parsePathData(pathData);
 
         const preview = isCreating && (
@@ -131,7 +130,7 @@ const AddBezier = React.createClass({
         const commit = (e) => {
             onAdd({ element: Bezier, props: {
                 d: path,
-                style: style
+                style: Object.assign({},style)
             }});
             this.setState({
                 isCreating: false,

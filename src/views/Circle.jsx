@@ -17,14 +17,15 @@ const AddCircle = React.createClass({
         };
     },
     render () {
-        const { data, width, height, onAdd } = this.props;
+        const { data, width, height, onAdd, style } = this.props;
         const { isCreating, dragState } = this.state;
         let { newItemProps } = this.state;
 
         const dragNew = {
             props: {},
             onDragStart: (x,y, e) => {
-                newItemProps = { x: x , y: y, r: 1, fill: "blue"};
+                newItemProps = { x: x , y: y, r: 1,
+                        style: Object.assign({},style)};
 
                 this.setState({
                     newItemProps: newItemProps,

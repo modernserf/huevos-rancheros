@@ -11,7 +11,7 @@ const _t = React.PropTypes;
 
 const ModeSelector = React.createClass({
     render () {
-        const { onChange } = this.props;
+        const { data, onChange } = this.props;
         const modes = [
             ['Move', MoveMode],
             ['Circle', Circle.add],
@@ -27,7 +27,10 @@ const ModeSelector = React.createClass({
         return (
             <div style={style}>
                 {modes.map(m => <button key={m[0]}
-                    style={{display: "block"}}
+                    style={{
+                        display: "block",
+                        color: data === m[1] ? "red" : "black"
+                    }}
                     onClick={e => onChange(m[1])}>
                     {m[0]}
                 </button>)}
@@ -36,22 +39,57 @@ const ModeSelector = React.createClass({
     }
 });
 
+const ColorPicker = React.createClass({
+    render (){
+        const { data, onChange } = this.props;
+
+        const cl = ['transparent', 'black'].concat(
+            Object.keys(colors).map(k => colors[k])
+        );
+
+        const getStyle =  (c, type) => ({
+            width: 20,
+            height: 20,
+            cursor: "pointer",
+            backgroundColor: c,
+            borderStyle: "solid",
+            borderWidth: 1,
+            borderColor: data[type] === c ? "red" : "white"
+        });
+
+        const rows = cl.map(c => {
+            return (
+                <tr key={c}>
+                    <td style={getStyle(c,'stroke')}
+                        onClick={e => onChange({stroke: c})}>&nbsp;</td>
+                    <td style={getStyle(c,'fill')}
+                        onClick={e => onChange({fill: c})}>&nbsp;</td>
+                </tr>
+            );
+        });
+
+        return (
+            <table style={{backgroundColor: "white"}}><tbody>
+                {rows}
+            </tbody></table>
+        );
+
+    }
+});
+
 const Artboard = React.createClass({
     getInitialState (){
         return {
-            data : [
-                {element: Circle, props: {
-                    fill: colors.gold,
-                    x: 100,
-                    y: 100,
-                    r: 30
-                }}
-            ],
-            mode: MoveMode
+            data : [],
+            mode: MoveMode,
+            style: {
+                stroke: 'black',
+                fill: 'transparent'
+            }
         };
     },
     render () {
-        const { data, mode: Mode } = this.state;
+        const { data, mode: Mode, style } = this.state;
         const width = 600;
         const height = 400;
 
@@ -83,11 +121,22 @@ const Artboard = React.createClass({
 
         return (
             <div style={container}>
-                <ModeSelector onChange={m => this.setState({mode: m})}/>
+                <ModeSelector data={Mode}
+                    onChange={m => this.setState({mode: m})}/>
                 <svg style={artboard}>
                     <Mode width={width} height={height} data={data}
+                        style={style}
                         onChange={onChange} onAdd={onAdd}/>
                 </svg>
+                <div style={{
+                    position: "fixed",
+                    top: 0,
+                    right: 20,
+                }}>
+                    <ColorPicker data={style}
+                        onChange={s => this.setState(
+                            {style: Object.assign(style,s)})}/>
+                </div>
             </div>
         );
     }
