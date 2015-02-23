@@ -4,8 +4,11 @@ import React from 'react';
 import MoveMode from 'views/MoveMode';
 import Circle from 'views/Circle';
 import Bezier from 'views/Bezier';
+import Drag from 'views/Drag';
 
 import {colors} from 'views/style';
+
+const { DragState, DragArea, Draggable } = Drag('div');
 
 const _t = React.PropTypes;
 
@@ -18,14 +21,8 @@ const ModeSelector = React.createClass({
             ['Path',Bezier.add],
         ];
 
-        const style = {
-            position: "fixed",
-            top: 0,
-            left: 0,
-        };
-
         return (
-            <div style={style}>
+            <div>
                 {modes.map(m => <button key={m[0]}
                     style={{
                         display: "block",
@@ -77,33 +74,57 @@ const ColorPicker = React.createClass({
     }
 });
 
-const Artboard = React.createClass({
-    getInitialState (){
-        return {
-            data : [],
-            mode: MoveMode,
-            style: {
-                stroke: 'black',
-                fill: 'transparent'
-            }
-        };
-    },
-    render () {
-        const { data, mode: Mode, style } = this.state;
-        const width = 600;
-        const height = 400;
+const Window = React.createClass({
+    render (){
+        const { x, y, dragState, onDrag, children } = this.props;
 
         const container = {
-            backgroundColor: "#000",
-            height: 1000
+            position: "fixed",
+            top: y,
+            left: x,
+            border: "1px solid #999"
         };
 
+        const handle = { minWidth: 20, height: 20, backgroundColor: "#999"};
+
+        return (
+            <div style={container}>
+                <Draggable dragState={dragState} onDrag={onDrag}>
+                    <div style={handle}></div>
+                </Draggable>
+                <div>
+                    {children}
+                </div>
+            </div>
+        );
+    }
+});
+
+const windowSet = [
+    { x: 0, y: 0, render (){
+        return (
+            <ModeSelector data={this.state.mode}
+                onChange={m => this.setState({mode: m})}/>
+        );
+    }},
+    { x: 0, y: 100, render (){
+        return (
+            <ColorPicker data={this.state.style}
+            onChange={s => this.setState(
+                {style: Object.assign(this.state.style,s)})}/>
+        );
+    }},
+    { x: 100, y: 0, render (){
+        const boardWidth = 600;
+        const boardHeight = 400;
+
+        const { data, mode: Mode, style} = this.state;
+
         const artboard = {
-            width: width,
-            height: height,
+            width: boardWidth,
+            height: boardHeight,
             backgroundColor: "#fff",
             display: "block",
-            marginLeft: 100
         };
 
         const onChange = (x, props) => {
@@ -120,23 +141,76 @@ const Artboard = React.createClass({
         };
 
         return (
+            <svg style={artboard}>
+                <Mode width={boardWidth} height={boardHeight} data={data}
+                    style={style}
+                    onChange={onChange} onAdd={onAdd}/>
+            </svg>
+
+        )
+    }}
+];
+
+const Artboard = React.createClass({
+    getInitialState (){
+        return {
+            data : [],
+            mode: MoveMode,
+            style: {
+                stroke: 'black',
+                fill: 'transparent'
+            },
+            dragState: DragState.create(),
+            windows: windowSet,
+            width: 100,
+            height: 100
+        };
+    },
+    setSize (){
+        this.setState({
+            width: window.innerWidth,
+            height: window.innerHeight
+        });
+    },
+    componentDidMount (){
+        this.setSize();
+
+        window.addEventListener('scroll', e => { this.setSize(); });
+        window.addEventListener('resize', e => { this.setSize(); });
+    },
+    render () {
+        const { data, mode: Mode, style, windows, dragState,
+            width, height } = this.state;
+
+
+
+        const container = {
+            position: "fixed",
+            backgroundColor: "#000",
+            height: "100%",
+            width: "100%"
+        };
+
+        const windowTags = windows.map((w,i) => {
+            return (
+                <Window key={i} x={w.x} y={w.y} dragState={dragState}
+                    onDrag={(x,y) => {
+                        w.x = x;
+                        w.y = y;
+                        this.forceUpdate();
+                    }}>
+                    {w.render.call(this)}
+                </Window>
+            );
+        });
+
+        return (
             <div style={container}>
-                <ModeSelector data={Mode}
-                    onChange={m => this.setState({mode: m})}/>
-                <svg style={artboard}>
-                    <Mode width={width} height={height} data={data}
-                        style={style}
-                        onChange={onChange} onAdd={onAdd}/>
-                </svg>
-                <div style={{
-                    position: "fixed",
-                    top: 0,
-                    right: 20,
-                }}>
-                    <ColorPicker data={style}
-                        onChange={s => this.setState(
-                            {style: Object.assign(style,s)})}/>
-                </div>
+                <DragArea dragState={dragState} width={width} height={height}>
+                    {windowTags}
+                </DragArea>
+
+
             </div>
         );
     }
