@@ -64,7 +64,9 @@ export default function (E) {
         getInitialState () {
             return {
                 x: 0,
-                y: 0
+                y: 0,
+                width: 0,
+                height: 0
             };
         },
         getOffset () {
@@ -72,7 +74,7 @@ export default function (E) {
             const rect = el.getBoundingClientRect();
             this.setState({
                 x: rect.left,
-                y: rect.top
+                y: rect.top,
             });
         },
         componentDidMount () {
@@ -81,7 +83,7 @@ export default function (E) {
             window.addEventListener('resize', e => { this.getOffset(); });
         },
         render () {
-            const { width, height, children, dragState } = this.props;
+            const { children, dragState, width, height } = this.props;
             const { x, y } = this.state;
 
             return (

@@ -62,7 +62,55 @@ const Path = React.createClass({
     }
 });
 
+
+
 const EditPath = React.createClass({
+    onMove (e){
+        let { data, movingID, movingPos } = this.state;
+
+        if (movingID === null){ return; }
+
+        const nextPos = [e.clientX, e.clientY];
+
+        if (movingPos === 2){ 
+            let diff = sub(nextPos, data[movingID][3]);
+            data[movingID][1] = add(diff, data[movingID][1]);
+            data[movingID][2] = add(diff, data[movingID][2]);
+        }
+
+        data[movingID][movingPos + 1] = nextPos;
+
+        this.forceUpdate();
+    },
+    onClickPoint (e, id, pos){
+        const { data, isDeleteMode } = this.state;
+
+        if (isDeleteMode){
+            let nextData = data.slice(0, id)
+                .concat(data.slice(id + 1));
+
+            this.setState({
+                data: nextData
+            });
+
+        } else {
+            this.setState({
+                movingID: id,
+                movingPos: pos
+            });   
+        }
+    },
+    addPoint(e){
+        let { data } = this.state;
+
+        const point = [e.clientX, e.clientY];
+
+        const cmd = ['C', offset(point,-20), offset(point,20),point];
+
+        data.push(cmd);
+
+        this.forceUpdate();
+    },
     render () {
         const { data, onClick } = this.props;
 
@@ -112,104 +160,91 @@ const EditPath = React.createClass({
     }
 });
 
+const Circle = React.createClass({
+    render () {
+        const { x, y } = this.props;
 
+        return (
+            <g transform={`translate(${x},${y})`}>
+                <circle {...this.props}/>
+            </g>
+        );
+    }
+});
+
+
+const InactiveMode = React.createClass({
+    render () {
+        const { data , width, height } = this.props;
+
+        const items = data.map((it,index) => {
+            const Element = it.element;
+
+            return (
+                <Element key={index} {...it.props}/>
+            );
+        });
+
+        return (
+            <g>
+                {items}
+            </g>
+        );
+    }
+});
+
+const MoveMode = React.createClass({
+    getInitialState (){
+        const dragState = DragState.create();
+
+        return {
+            dragState: dragState
+        };
+    },
+    render () {
+        const { data, onChange, width, height } = this.props;
+        const { dragState } = this.state;
+
+        const items = data.map((it,index) => {
+            const Element = it.element;
+
+            return (
+                <Draggable key={index} dragState={dragState}
+                    onDrag={(x,y) => { onChange(it,{ x, y }); }}>
+                    <Element {...it.props}/>
+                </Draggable>
+            );
+        });
+
+        return (
+            <DragArea dragState={dragState} width={width} height={height}>
+                {items}
+            </DragArea>
+        );
+    }
+});
 
 const Artboard = React.createClass({
     getInitialState (){
         return {
-            data : [],
-            eggX: 100,
-            eggY: 100,
-            movingID: null,
-            movingPos: null,
-            isDeleteMode: false
+            data : [
+                {element: Circle, props: {
+                    fill: colors.gold,
+                    x: 100,
+                    y: 100,
+                    r: 30
+                }}
+            ],
         };
     },
-    componentWillMount (){
-        const dragState = DragState.create();
-
-        this.setState({
-            dragState: dragState
-        });
-
-
-        window.addEventListener('keydown', (e) =>{
-            if (e.keyCode === 27){
-                this.setState({
-                    movingID: null,
-                    movingPos: null
-                });
-            }
-
-            this.setState({
-                isDeleteMode: e.shiftKey
-            });
-        });
-        window.addEventListener('keyup', (e) => {
-            this.setState({
-                isDeleteMode: false
-            });
-        });
-    },
-    onMove (e){
-        let { data, movingID, movingPos } = this.state;
-
-        if (movingID === null){ return; }
-
-        const nextPos = [e.clientX, e.clientY];
-
-        if (movingPos === 2){ 
-            let diff = sub(nextPos, data[movingID][3]);
-            data[movingID][1] = add(diff, data[movingID][1]);
-            data[movingID][2] = add(diff, data[movingID][2]);
-        }
-
-        data[movingID][movingPos + 1] = nextPos;
-
-        this.forceUpdate();
-    },
-    onClickPoint (e, id, pos){
-        const { data, isDeleteMode } = this.state;
-
-        if (isDeleteMode){
-            let nextData = data.slice(0, id)
-                .concat(data.slice(id + 1));
-
-            this.setState({
-                data: nextData
-            });
-
-        } else {
-            this.setState({
-                movingID: id,
-                movingPos: pos
-            });   
-        }
-    },
-    addPoint(e){
-        let { data } = this.state;
-
-        const point = [e.clientX, e.clientY];
-
-        const cmd = ['C', offset(point,-20), offset(point,20),point];
-
-        data.push(cmd);
-
-        this.forceUpdate();
-    },
-
     render () {
-        const { data, isDeleteMode, movingID, eggX, eggY, dragState } = this.state;
+        const { data, eggX, eggY, dragState } = this.state;
         const width = 600;
         const height = 400;
 
-        const cursor = isDeleteMode ? "context-menu" :
-            "default";
-
         const container = {
             backgroundColor: "#000",
-            height: 1000,
-            cursor: cursor
+            height: 1000
         };
 
         const artboard = {
@@ -220,33 +255,29 @@ const Artboard = React.createClass({
             marginLeft: 100
         };
 
-        const onClick = {
-            point: (e, id, pos) => this.onClickPoint(e,id, pos),
-            default: (e) => this.addPoint
+        const onChange = (x, props) => {
+            const item = data.find(it => it === x);
+            if (item){
+                Object.assign(item.props,props);
+                this.forceUpdate();
+            }
         };
+
+        const Mode = InactiveMode;
+
+        // const onClick = {
+        //     point: (e, id, pos) => this.onClickPoint(e,id, pos),
+        //     default: (e) => this.addPoint
+        // };
 
         return (
             <div style={container}>
                 <svg style={artboard}>
-                    <DragArea width={width} height={height} dragState={dragState}>
+                    <Mode width={width} height={height} data={data} onChange={onChange}/>
                         {/*<rect width={width} height={height} fill="transparent"
                             onClick={this.addPoint}/>*/}
 
-                        <Draggable x={eggX} y={eggY} dragState={dragState}
-                            onDrag={(x,y) => {
-                                this.setState({
-                                    eggX: x,
-                                    eggY: y
-                                });
-                            }}>
-                            <circle fill={colors.gold} r={30}/>
-                        </Draggable>
-                        
-
-                        {/*<EditPath data={data} onClick={onClick}/>*/}
-
-                    </DragArea>
-                    
+                        {/*<EditPath data={data} onClick={onClick}/>*/}                    
                 </svg>
             </div>
         );
