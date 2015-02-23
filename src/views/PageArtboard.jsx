@@ -224,6 +224,44 @@ const MoveMode = React.createClass({
     }
 });
 
+// TODO: use DragArea with click
+const AddMode = React.createClass({
+    render () {
+        const { data, onChange, width, height, onAdd } = this.props;
+
+        return (
+            <g>
+                <InactiveMode width={width} height={height} data={data}/>
+                <rect width={width} height={height} onClick={onAdd} fill="transparent"/>
+            </g>
+        );
+    }
+});
+
+const ModeSelector = React.createClass({
+    render () {
+        const { onChange } = this.props;
+        const modes = [
+            ['Move', MoveMode],
+            ['Add', AddMode]
+        ];
+
+        const style = {
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+        };
+
+        return (
+            <div style={style}>
+                {modes.map(m => <button key={m[0]} onClick={e => onChange(m[1])}>
+                    {m[0]}
+                </button>)}
+            </div>
+        );
+    }
+});
+
 const Artboard = React.createClass({
     getInitialState (){
         return {
@@ -235,10 +273,11 @@ const Artboard = React.createClass({
                     r: 30
                 }}
             ],
+            mode: MoveMode
         };
     },
     render () {
-        const { data, eggX, eggY, dragState } = this.state;
+        const { data, mode: Mode } = this.state;
         const width = 600;
         const height = 400;
 
@@ -263,7 +302,18 @@ const Artboard = React.createClass({
             }
         };
 
-        const Mode = InactiveMode;
+        const onAdd = (e) => {
+            const newElement = {
+                element: Circle, props: {
+                    fill: "blue",
+                    r: 30,
+                    x: e.clientX,
+                    y: e.clientY
+                }
+            };
+            data.push(newElement);
+            this.forceUpdate();
+        };
 
         // const onClick = {
         //     point: (e, id, pos) => this.onClickPoint(e,id, pos),
@@ -272,8 +322,10 @@ const Artboard = React.createClass({
 
         return (
             <div style={container}>
+                <ModeSelector onChange={m => this.setState({mode: m})}/>
                 <svg style={artboard}>
-                    <Mode width={width} height={height} data={data} onChange={onChange}/>
+                    <Mode width={width} height={height} data={data} 
+                        onChange={onChange} onAdd={onAdd}/>
                         {/*<rect width={width} height={height} fill="transparent"
                             onClick={this.addPoint}/>*/}
 
