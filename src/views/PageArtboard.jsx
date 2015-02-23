@@ -1,7 +1,12 @@
 "use strict";
 
 import React from 'react';
+import EventStream from 'types/EventStream';
+import Drag from 'views/Drag';
+
 import {colors} from 'views/style'; 
+
+const _t = React.PropTypes;
 
 const flatcat = (arr) => arr instanceof Array ?
     arr.map(flatcat).join(' ') :
@@ -14,6 +19,7 @@ const offset = (pair, x) => add(pair, [-x,x]);
 // const cursor = isGrabbing ? "-webkit-grabbing" : "-webkit-grab";
 // style={{cursor: cursor}}
 
+const { DragState, DragArea, Draggable } = Drag('g');
 
 const Point = React.createClass({
     render () {
@@ -112,12 +118,21 @@ const Artboard = React.createClass({
     getInitialState (){
         return {
             data : [],
+            eggX: 100,
+            eggY: 100,
             movingID: null,
             movingPos: null,
             isDeleteMode: false
         };
     },
     componentWillMount (){
+        const dragState = DragState.create();
+
+        this.setState({
+            dragState: dragState
+        });
+
+
         window.addEventListener('keydown', (e) =>{
             if (e.keyCode === 27){
                 this.setState({
@@ -184,7 +199,7 @@ const Artboard = React.createClass({
     },
 
     render () {
-        const { data, isDeleteMode, movingID } = this.state;
+        const { data, isDeleteMode, movingID, eggX, eggY, dragState } = this.state;
         const width = 600;
         const height = 400;
 
@@ -201,7 +216,8 @@ const Artboard = React.createClass({
             width: width,
             height: height,
             backgroundColor: "#fff",
-            display: "block"
+            display: "block",
+            marginLeft: 100
         };
 
         const onClick = {
@@ -210,14 +226,27 @@ const Artboard = React.createClass({
         };
 
         return (
-            <div style={container} onMouseMove={this.onMove}>
+            <div style={container}>
                 <svg style={artboard}>
-                    <rect width={width} height={height} fill="transparent"
-                        onClick={this.addPoint}/>
+                    <DragArea width={width} height={height} dragState={dragState}>
+                        {/*<rect width={width} height={height} fill="transparent"
+                            onClick={this.addPoint}/>*/}
 
-                    <circle fill={colors.gold} cx={width/2} cy={height/2} r={30}/>
+                        <Draggable x={eggX} y={eggY} dragState={dragState}
+                            onDrag={(x,y) => {
+                                this.setState({
+                                    eggX: x,
+                                    eggY: y
+                                });
+                            }}>
+                            <circle fill={colors.gold} r={30}/>
+                        </Draggable>
+                        
 
-                    <EditPath data={data} onClick={onClick}/>
+                        {/*<EditPath data={data} onClick={onClick}/>*/}
+
+                    </DragArea>
+                    
                 </svg>
             </div>
         );
