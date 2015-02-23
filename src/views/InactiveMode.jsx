@@ -11,8 +11,13 @@ const InactiveMode = React.createClass({
                 it.element :
                 it.element.show;
 
+            const { x, y } = it.props;
+
             return (
-                <Element key={index} {...it.props}/>
+                <g key={index} transform={`translate(${x||0},${y||0})`}>
+                    <Element {...it.props}/>
+                </g>
+
             );
         });
 

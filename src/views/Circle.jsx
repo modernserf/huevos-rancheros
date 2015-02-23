@@ -8,18 +8,6 @@ import InactiveMode from 'views/InactiveMode';
 
 const { DragState, DragArea, Draggable } = Drag('g');
 
-const Circle = React.createClass({
-    render () {
-        const { x, y } = this.props;
-
-        return (
-            <g transform={`translate(${x},${y})`}>
-                <circle {...this.props}/>
-            </g>
-        );
-    }
-});
-
 const AddCircle = React.createClass({
     getInitialState (){
         return {
@@ -58,7 +46,9 @@ const AddCircle = React.createClass({
         };
 
         const preview = isCreating && (
-            <Circle {...newItemProps}/>
+            <g transform={`translate(${newItemProps.x},${newItemProps.y})`}>
+                <circle {...newItemProps}/>
+            </g>
         );
 
         return (
@@ -75,7 +65,7 @@ const AddCircle = React.createClass({
 });
 
 const CircleElement = {
-    show: Circle,
+    show: "circle",
     add: AddCircle
 };
 

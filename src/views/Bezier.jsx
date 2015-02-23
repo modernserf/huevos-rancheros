@@ -13,18 +13,6 @@ const flatcat = (arr) => arr instanceof Array ?
     arr.map(flatcat).join(' ') :
     String(arr);
 
-const ShowBezier = React.createClass({
-    render () {
-        const { x, y } = this.props;
-
-        return (
-            <g transform={`translate(${x||0},${y||0})`}>
-                <path {...this.props}/>
-            </g>
-        );
-    }
-});
-
 const DottedLine = React.createClass({
     render () {
         const { s, e } = this.props;
@@ -93,7 +81,7 @@ const AddBezier = React.createClass({
         const path = this.parsePathData(pathData);
 
         const preview = isCreating && (
-            <ShowBezier d={path} style={style}/>
+            <path d={path} style={style}/>
         );
 
         const commands = pathData.map((cmd,id) => {
@@ -168,7 +156,7 @@ const AddBezier = React.createClass({
 });
 
 const Bezier = {
-    show: ShowBezier,
+    show: "path",
     add: AddBezier
 };
 

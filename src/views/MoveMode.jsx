@@ -27,8 +27,7 @@ const MoveMode = React.createClass({
             return (
                 <Draggable key={index} dragState={dragState}
                     x={it.props.x} y={it.props.y}
-                    onDrag={(x,y) => {
-                        onChange(it,{ x, y }); }}>
+                    onDrag={(x,y) => { onChange(it,{ x, y }); }}>
                     <Element {...myProps}/>
                 </Draggable>
             );
