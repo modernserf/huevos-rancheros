@@ -17,7 +17,7 @@ class DragState {
 
         this.draggedItem = item;
         if (this.draggedItem.onDragStart){
-            this.draggedItem.onDragStart(x,y,e);            
+            this.draggedItem.onDragStart(x,y,e);
         }
 
         this.update();
@@ -29,7 +29,7 @@ class DragState {
         }
 
         this.update();
-    } 
+    }
 
     onDragEnd (x, y, e) {
         if (this.draggedItem && this.draggedItem.onDragEnd) {
@@ -69,8 +69,6 @@ export default function (E) {
             return {
                 x: 0,
                 y: 0,
-                width: 0,
-                height: 0
             };
         },
         getOffset () {
@@ -93,7 +91,8 @@ export default function (E) {
             return (
                 <E  onMouseDown={e => dragState.onDragStart(dragNew,
                         e.clientX - x, e.clientY - y, e)}
-                    onMouseMove={e => dragState.onDrag(e.clientX - x, e.clientY - y, e)}
+                    onMouseMove={e => dragState.onDrag(
+                        e.clientX - x, e.clientY - y, e)}
                     onMouseUp={e => {
                         dragState.onDragEnd(e.clientX - x, e.clientY - y, e);
                         this.forceUpdate();
@@ -127,7 +126,7 @@ export default function (E) {
                 },
                 onDragEnd: (x,y,e) => {
                     this.setState({isDragging: false});
-                }                
+                }
             };
         },
         getInitialState () {
@@ -139,7 +138,7 @@ export default function (E) {
             const { x, y, children, dragState } = this.props;
 
             const cursor = this.state.isDragging ? "-webkit-grabbing" : "-webkit-grab";
-            
+
             const transform = `translate(${x},${y})`;
 
             const props = Object.assign(this.getDefaultActions(), this.props);

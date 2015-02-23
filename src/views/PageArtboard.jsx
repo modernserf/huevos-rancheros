@@ -3,12 +3,12 @@
 import React from 'react';
 import EventStream from 'types/EventStream';
 import Drag from 'views/Drag';
-
+import ClickArea from 'views/ClickArea';
 import MoveMode from 'views/MoveMode';
 import InactiveMode from 'views/InactiveMode';
 import Circle from 'views/Circle';
 
-import {colors} from 'views/style'; 
+import {colors} from 'views/style';
 
 const _t = React.PropTypes;
 
@@ -61,13 +61,14 @@ const AddBezier = React.createClass({
         };
     },
     parsePathData (data){
+        if (!data.length){ return ""; }
+
         const last = data[data.length - 1];
         const start = ['M', last[3]];
         const d = flatcat([start].concat(data)) + " Z";
         return d;
     },
     addPoint (x,y,e) {
-        console.log('addPoint');
         const point = [x,y];
 
         const cmd = ['C', offset(point,-20), offset(point,20),point];
@@ -78,10 +79,22 @@ const AddBezier = React.createClass({
             pathData: pathData
         });
     },
-    dragPoint (p, x,y,e) {
-        console.log('dragPoint');
-        p[0] = x;
-        p[1] = y;
+    dragPoint (params) {
+        const { isAnchor, id, pos, x, y } = params;
+        const { pathData } = this.state;
+
+        // if anchor point move all points together
+        if (isAnchor) {
+            const diff = sub([x,y],pathData[id][pos + 1]);
+            pathData[id] = [pathData[id][0]].concat(
+                pathData[id].slice(1).map(p => add(p, diff))
+            );
+
+        // if control point move just control point
+        } else {
+            pathData[id][pos + 1] = [x, y];
+        }
+
         this.forceUpdate();
     },
     render (){
@@ -89,10 +102,10 @@ const AddBezier = React.createClass({
         const { isCreating, dragState, pathData } = this.state;
 
         const style = { stroke: "black", fill: "transparent" };
-
+        const path = this.parsePathData(pathData);
 
         const preview = isCreating && (
-            <ShowBezier d={this.parsePathData(pathData)} style={style}/>
+            <ShowBezier d={path} style={style}/>
         );
 
         const commands = pathData.map((x,id) => {
@@ -106,7 +119,14 @@ const AddBezier = React.createClass({
                 return (
                     <Draggable key={pos} dragState={dragState}
                         x={x} y={y}
-                        onDrag={(x,y,e)=> this.dragPoint(p, x,y,e)}>
+                        onDrag={(x,y,e)=> this.dragPoint({
+                            isAnchor: pos === 2,
+                            id: id,
+                            pos: pos,
+                            x: x,
+                            y: y,
+                            event: e
+                        })}>
                         <circle r={5} fill={color}/>
                     </Draggable>
                 );
@@ -116,7 +136,7 @@ const AddBezier = React.createClass({
                 <g>
                     <DottedLine s={points[0]} e={points[2]}/>
                     <DottedLine s={points[1]} e={points[2]}/>
-                </g> : 
+                </g> :
                 null;
 
             return (
@@ -127,16 +147,28 @@ const AddBezier = React.createClass({
             );
         });
 
+        const commit = (e) => {
+            onAdd({ element: Bezier, props: {
+                d: path,
+                style: style
+            }});
+            this.setState({
+                isCreating: false,
+                pathData: []
+            });
+        };
+
         return (
             <g>
                 <InactiveMode width={width} height={height} data={data}/>
                 {preview}
-                <DragArea dragState={dragState} 
+                <DragArea dragState={dragState}
                     width={width} height={height}>
-                    <rect width={width} height={height} fill="transparent"
-                        onClick={e => this.addPoint(e.clientX, e.clientY,e)}/>
+                    <ClickArea width={width} height={height}
+                        onClick={(x,y,e) => this.addPoint(x,y,e)}/>
                     {commands}
                 </DragArea>
+                <text y={height} onClick={commit}>Commit</text>
             </g>
         );
     }
@@ -164,7 +196,7 @@ const ModeSelector = React.createClass({
 
         return (
             <div style={style}>
-                {modes.map(m => <button key={m[0]} 
+                {modes.map(m => <button key={m[0]}
                     style={{display: "block"}}
                     onClick={e => onChange(m[1])}>
                     {m[0]}
@@ -223,7 +255,7 @@ const Artboard = React.createClass({
             <div style={container}>
                 <ModeSelector onChange={m => this.setState({mode: m})}/>
                 <svg style={artboard}>
-                    <Mode width={width} height={height} data={data} 
+                    <Mode width={width} height={height} data={data}
                         onChange={onChange} onAdd={onAdd}/>
                 </svg>
             </div>
