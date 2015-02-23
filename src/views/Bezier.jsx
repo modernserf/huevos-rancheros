@@ -34,14 +34,24 @@ const AddBezier = React.createClass({
         if (!data.length){ return ""; }
 
         const last = data[data.length - 1];
-        const start = ['M', last[3]];
-        const d = flatcat([start].concat(data)) + " Z";
+
+        const start = ['M', last[0]];
+
+        let offset = [];
+
+        // rearrange path data from logical to svg order
+        for (let i = 0; i < data.length; i++) {
+            let lIndex = i ? i - 1 : data.length - 1;
+            offset.push(['C',data[lIndex][2],data[i][1],data[i][0]]);
+        }
+
+        const d = flatcat([start].concat(offset)) + " Z";
         return d;
     },
     addPoint (x,y,e) {
         const point = [x,y];
 
-        const cmd = ['C', offset(point,-20), offset(point,20),point];
+        const cmd = [point, offset(point,-20), offset(point,20)];
         const pathData = this.state.pathData.concat([cmd]);
 
         this.setState({
@@ -61,14 +71,11 @@ const AddBezier = React.createClass({
 
         // if anchor point move all points together
         if (isAnchor) {
-            const diff = sub([x,y],pathData[id][pos + 1]);
-            pathData[id] = [pathData[id][0]].concat(
-                pathData[id].slice(1).map(p => add(p, diff))
-            );
-
+            const diff = sub([x,y],pathData[id][pos]);
+            pathData[id] = pathData[id].map(p => add(p, diff));
         // if control point move just control point
         } else {
-            pathData[id][pos + 1] = [x, y];
+            pathData[id][pos] = [x, y];
         }
 
         this.forceUpdate();
@@ -84,12 +91,10 @@ const AddBezier = React.createClass({
         );
 
         const commands = pathData.map((cmd,id) => {
-            const [type, ...points] = cmd;
 
-            const pointTags = points.map((p,pos) => {
+            const points = cmd.map((p,pos) => {
                 const [x,y] = p;
-
-                const color = pos === 2 ? "red" : "blue";
+                const isAnchor = pos === 0;
 
                 return (
                     <Draggable key={pos} dragState={dragState}
@@ -100,29 +105,29 @@ const AddBezier = React.createClass({
                             }
                         }}
                         onDrag={(_x,_y,e)=> this.dragPoint({
-                            isAnchor: pos === 2,
+                            isAnchor: isAnchor,
                             id: id,
                             pos: pos,
                             x: _x,
                             y: _y,
                             event: e
                         })}>
-                        <circle r={5} fill={color}/>
+                        <circle r={5} fill={isAnchor ? "red" : "blue"}/>
                     </Draggable>
                 );
             });
 
-            const lines = points.length > 1 ?
+            const lines = cmd.length > 1 ?
                 <g>
-                    <DottedLine s={points[0]} e={points[2]}/>
-                    <DottedLine s={points[1]} e={points[2]}/>
+                    <DottedLine s={cmd[0]} e={cmd[1]}/>
+                    <DottedLine s={cmd[0]} e={cmd[2]}/>
                 </g> :
                 null;
 
             return (
                 <g key={id}>
                     <g>{lines}</g>
-                    <g>{pointTags}</g>
+                    <g>{points}</g>
                 </g>
             );
         });

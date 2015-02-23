@@ -146,8 +146,7 @@ const windowSet = [
                     style={style}
                     onChange={onChange} onAdd={onAdd}/>
             </svg>
-
-        )
+        );
     }}
 ];
 
@@ -181,8 +180,6 @@ const Artboard = React.createClass({
     render () {
         const { data, mode: Mode, style, windows, dragState,
             width, height } = this.state;
-
-
 
         const container = {
             position: "fixed",
