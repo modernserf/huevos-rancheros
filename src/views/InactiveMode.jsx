@@ -4,7 +4,7 @@ import React from 'react';
 
 const InactiveMode = React.createClass({
     render () {
-        const { data , width, height } = this.props;
+        const { data } = this.props;
 
         const items = data.map((it,index) => {
             const Element = typeof it.element === "string" ?

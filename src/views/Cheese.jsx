@@ -30,12 +30,18 @@ var Cheese = React.createClass({
         }
     },
     render (){
+        const { data, isHover} = this.props;
+
         var chunks = this.state.chunks.map(x => <rect {...x}/>);
+
+        const melty = (data && data.cook && data.cook > 0.5) ?
+            {filter: "url(#goo)"} :
+            {};
 
         return (
             <g transform="translate(-10,-10)"
-                style={{filter: "url(#goo)"}}>
-                <rect {...addHoverStroke(this.props.isHover, {
+                style={melty}>
+                <rect {...addHoverStroke(isHover, {
                     fill: "transparent",
                     width: 20,
                     height: 20

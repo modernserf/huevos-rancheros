@@ -5,6 +5,7 @@ import MoveMode from 'views/MoveMode';
 import Circle from 'views/Circle';
 import Bezier from 'views/Bezier';
 import Drag from 'views/Drag';
+import LayerList from 'views/LayerList';
 
 import {colors} from 'views/style';
 
@@ -76,7 +77,7 @@ const ColorPicker = React.createClass({
 
 const Window = React.createClass({
     render (){
-        const { x, y, dragState, onDrag, children } = this.props;
+        const { x, y, dragState, onDrag, children, name } = this.props;
 
         const container = {
             position: "fixed",
@@ -92,7 +93,9 @@ const Window = React.createClass({
             <div style={container}>
                 <Draggable dragState={dragState} onDrag={onDrag}
                     x={x} y={y} isHandle={true}>
-                    <div style={handle}></div>
+                    <div style={handle}>
+                        {name}
+                    </div>
                 </Draggable>
                 <div>
                     {children}
@@ -116,7 +119,7 @@ const windowSet = [
                 {style: Object.assign(this.state.style,s)})}/>
         );
     }},
-    { x: 100, y: 0, render (){
+    { x: 100, y: 0, name: "Artboard", render (){
         const boardWidth = 600;
         const boardHeight = 400;
 
@@ -148,6 +151,11 @@ const windowSet = [
                     style={style}
                     onChange={onChange} onAdd={onAdd}/>
             </svg>
+        );
+    }},
+    { x: 720, y: 0, name: "Layers", render (){
+        return (
+            <LayerList data={this.state.data}/>
         );
     }}
 ];
@@ -193,6 +201,7 @@ const Artboard = React.createClass({
         const windowTags = windows.map((w,i) => {
             return (
                 <Window key={i} x={w.x} y={w.y} dragState={dragState}
+                    name={w.name}
                     onDrag={(x,y) => {
                         w.x = x;
                         w.y = y;
@@ -208,8 +217,6 @@ const Artboard = React.createClass({
                 <DragArea dragState={dragState} width={width} height={height}>
                     {windowTags}
                 </DragArea>
-
-
             </div>
         );
     }

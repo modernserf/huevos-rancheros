@@ -20,8 +20,8 @@ var PercentSlider =React.createClass({
         var {value, style} = this.props;
 
         return (
-            <input type="range" 
-                min="1" max="100" step="1" 
+            <input type="range"
+                min="1" max="100" step="1"
                 value={(value || 0) * 100}
                 onChange={this.onChange}
                 style={style}/>
@@ -59,21 +59,21 @@ export var IngredientListItem = React.createClass({
     render (){
         var {item, isHover} = this.props;
 
-        var style = isHover ? { 
+        var style = isHover ? {
             backgroundColor: colors.blue,
             color: "white",
             cursor: "pointer"
         } : {};
 
         return (
-            <div style={style} 
+            <div style={style}
                 onMouseEnter={this.onMouseEnter}
                 onMouseLeave={this.onMouseLeave}>
                 <span onClick={this.onSelect} style={{
                     display: "inline-block",
                     width: 70
                 }}>{item.component.displayName}</span>
-                {/*<PercentSlider value={item.cook} onChange={this.onCook}/>*/}
+                <PercentSlider value={item.cook} onChange={this.onCook}/>
                 <PlainButton onClick={this.onRemove} style={{
                     paddingRight: 8
                 }}>&times;</PlainButton>
