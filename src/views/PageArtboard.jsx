@@ -80,8 +80,9 @@ const Window = React.createClass({
 
         const container = {
             position: "fixed",
-            top: y,
-            left: x,
+            top: 0,
+            left: 0,
+            transform: `translate(${x}px,${y}px)`,
             border: "1px solid #999"
         };
 
@@ -89,7 +90,8 @@ const Window = React.createClass({
 
         return (
             <div style={container}>
-                <Draggable dragState={dragState} onDrag={onDrag}>
+                <Draggable dragState={dragState} onDrag={onDrag}
+                    x={x} y={y} isHandle={true}>
                     <div style={handle}></div>
                 </Draggable>
                 <div>

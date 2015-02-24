@@ -1,6 +1,6 @@
 "use strict";
 import React from 'react';
-import {colors, addHoverStroke} from 'views/style'; 
+import {colors, addHoverStroke} from 'views/style';
 
 var ptc = function (radius, theta){
     return [
@@ -20,7 +20,7 @@ var Egg = React.createClass({
         var p = [];
 
         var bz = function (i, j, k){
-            return `C ${p[i][0]} ${p[i][1]}, ${p[j][0]} ${p[j][1]}, ${p[k][0]} ${p[k][1]} `;
+            return `S ${p[i][0]} ${p[i][1]} ${p[k][0]} ${p[k][1]} `;
         };
 
         var points = (11 + Math.floor(Math.random() * 10)) * 3;
@@ -31,11 +31,12 @@ var Egg = React.createClass({
         var eggPath = `M ${p[0][0]} ${p[0][1]} `;
 
         for (i = 0; i < points; i += 3){
-            eggPath += bz(i+1,i+2, i+3 % points);    
+            eggPath += bz(i+1,i+2, i+3 % points);
         }
 
         this.setState({
-            eggPath: eggPath + " Z",
+            eggPath: `${eggPath}
+                S${p[0][0]} ${p[0][1]} ${p[0][0]} ${p[0][1]}`,
             yoke: {
                 r: 4 + Math.random() * 2,
                 cx: Math.random() * 10 - 5,

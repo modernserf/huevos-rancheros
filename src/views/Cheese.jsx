@@ -1,6 +1,6 @@
 "use strict";
 import React from 'react';
-import {colors, addHoverStroke} from 'views/style'; 
+import {colors, addHoverStroke} from 'views/style';
 
 var cheeseColors = [colors.gold, "orange", "white"];
 
@@ -25,6 +25,7 @@ var Cheese = React.createClass({
                 y: y,
                 opacity: Math.random() + 0.5,
                 transform: `rotate(${Math.random() * 90}, ${x},${y})`
+
             };
         }
     },
@@ -32,7 +33,8 @@ var Cheese = React.createClass({
         var chunks = this.state.chunks.map(x => <rect {...x}/>);
 
         return (
-            <g transform="translate(-10,-10)">
+            <g transform="translate(-10,-10)"
+                style={{filter: "url(#goo)"}}>
                 <rect {...addHoverStroke(this.props.isHover, {
                     fill: "transparent",
                     width: 20,

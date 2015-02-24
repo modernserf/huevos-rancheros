@@ -161,12 +161,12 @@ export default function (E) {
             };
         },
         render (){
-            const { x, y, children, dragState } = this.props;
+            const { x, y, children, dragState, isHandle } = this.props;
 
             const cursor = this.state.isDragging ?
                 "-webkit-grabbing" : "-webkit-grab";
 
-            const transform = `translate(${x},${y})`;
+            const transform = isHandle ? "" : `translate(${x},${y})`;
 
             const props = Object.assign(this.getDefaultActions(), this.props);
 
