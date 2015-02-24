@@ -154,8 +154,32 @@ const windowSet = [
         );
     }},
     { x: 720, y: 0, name: "Layers", render (){
+        const onRemove = (it) => {
+            const { data } = this.state;
+
+            const nextData = data.filter(x => x !== it);
+            this.setState({
+                data: nextData
+            });
+        };
+
+        const onSelect = (it) => {
+            const { data } = this.state;
+
+            const nextData = data.map(x => {
+                x.selected = x === it;
+
+                return x;
+            });
+            this.setState({
+                data: nextData
+            });
+        };
+
         return (
-            <LayerList data={this.state.data}/>
+            <LayerList data={this.state.data}
+                onSelect={onSelect}
+                onRemove={onRemove}/>
         );
     }}
 ];

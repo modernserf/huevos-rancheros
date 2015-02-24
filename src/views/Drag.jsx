@@ -163,8 +163,7 @@ export default function (E) {
         render (){
             const { x, y, children, dragState, isHandle } = this.props;
 
-            const cursor = this.state.isDragging ?
-                "-webkit-grabbing" : "-webkit-grab";
+            const className = this.state.isDragging ? "is-dragging" : "";
 
             const transform = isHandle ? "" : `translate(${x},${y})`;
 
@@ -173,7 +172,7 @@ export default function (E) {
             return (
                 <E  transform={transform}
                     onMouseDown={e => dragState.onDragStart(props, e)}
-                    style={{cursor: cursor}}>
+                    className={className}>
                     {children}
                 </E>
             );

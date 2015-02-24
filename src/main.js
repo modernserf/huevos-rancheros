@@ -1,6 +1,7 @@
 "use strict";
 
 import 'es6-shim/es6-shim';
+import 'css/main.sass';
 import React from 'react';
 import Atom from 'types/Atom';
 import routes from 'routes';

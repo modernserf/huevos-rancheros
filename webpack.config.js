@@ -1,6 +1,9 @@
 "use strict";
 
-var webpack =   require('webpack');
+var webpack =   require('webpack'),
+    path =      require('path');
+
+var sassPath  = "includePaths[]=" + (path.resolve(__dirname, "./src"));
 
 module.exports = {
     entry: {
@@ -17,7 +20,9 @@ module.exports = {
     module: {
         loaders: [
             {test: /\.js$/, exclude: /node_modules/, loader: '6to5-loader'},
-            {test: /\.jsx$/, loaders: ["react-hot", "6to5", "jsx?harmony"] }
+            {test: /\.jsx$/, loaders: ["react-hot", "6to5", "jsx?harmony"] },
+            {test: /\.sass$/, loaders: ["style","css","autoprefixer",
+                "sass?indentedSyntax&" + sassPath]},
         ]
     },
     plugins: [

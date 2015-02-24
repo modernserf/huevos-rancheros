@@ -13,9 +13,20 @@ const InactiveMode = React.createClass({
 
             const { x, y } = it.props;
 
+            const selectedItem = Object.assign({}, it.props, { style: {
+                fill: "transparent",
+                stroke: "rgba(0,0,255,0.5)",
+                strokeWidth: 10
+            }});
+
+            const selection =  it.selected && (
+                <Element {...selectedItem }/>
+            );
+
             return (
                 <g key={index} transform={`translate(${x||0},${y||0})`}>
                     <Element {...it.props}/>
+                    {selection}
                 </g>
 
             );

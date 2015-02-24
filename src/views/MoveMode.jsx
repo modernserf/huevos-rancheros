@@ -24,11 +24,27 @@ const MoveMode = React.createClass({
             myProps.x = 0;
             myProps.y = 0;
 
+            const selectedItem = Object.assign({},myProps);
+            selectedItem.style = {
+                fill: "transparent",
+                stroke: "rgba(0,0,255,0.5)",
+                strokeWidth: 10
+            };
+
+            const selection = it.selected && (
+                <g>
+                    <Element {...selectedItem }/>
+                </g>
+            );
+
             return (
                 <Draggable key={index} dragState={dragState}
                     x={it.props.x} y={it.props.y}
                     onDrag={(x,y) => { onChange(it,{ x, y }); }}>
-                    <Element {...myProps}/>
+                    <g className="move-mode-draggable">
+                        <Element {...myProps}/>
+                    </g>
+                    {selection}
                 </Draggable>
             );
         });
