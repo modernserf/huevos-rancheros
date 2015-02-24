@@ -17,20 +17,22 @@ var PageHome = React.createClass({
                     justifyContent="center"
                     style={{height:"100%"}}>
                     <Flex>
-                        <h2 style={Object.assign({
-                            color: colors.gold,
-                            textAlign: "center",
-                            fontSize: 24,
-                            textShadow: `black 1px 1px`,
-                            marginTop: -24
-                        },fonts.hedLight)}>Exploring React.js with</h2>
                         <h1 style={Object.assign({
                             color: colors.gold,
-                            textAlign: "center",
-                            fontSize: 96,
+                            textAlign: "left",
+                            fontSize: 126,
                             textTransform: "uppercase",
-                            textShadow: `${colors.red} 1px 4px`   
-                        },fonts.hedHeavy)}>Huevos Rancheros</h1>
+                            textShadow: `${colors.red} 1px 4px`
+                        },fonts.hedHeavy)}>How to Draw an <br/>
+                            <span style={{fontSize: 200}}>egg</span></h1>
+                        <h2 style={Object.assign({
+                            color: colors.gold,
+                            textAlign: "left",
+                            fontSize: 48,
+                            textShadow: `${colors.red} 1px 1px`,
+                            // marginTop: -24
+                        },fonts.hedLight)}>(the hard way)</h2>
+
                     </Flex>
                 </FlexBox>
             </PageBase>

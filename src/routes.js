@@ -6,8 +6,10 @@ import Workspace from "views/PageWorkspace";
 import Artboard from "views/PageArtboard";
 
 var routes = [
-    {id: "artboard", title: "Artboard", page: Artboard},
+    {id: "intro", title: "Home", page: Home},
     {id: "workspace", title: "Workspace", page: Workspace},
+    {id: "artboard", title: "Artboard", page: Artboard},
+
 ];
 
 export default routes;
